@@ -1,0 +1,39 @@
+{
+  "id": "enhancedcombathud-vaesen",
+  "title": "Argon - Combat HUD (VAESEN)",
+  "description": "A Argon version for the Vaesen System",
+  "authors": [
+    {
+    "name": "saibot"
+    }
+  ],
+  "version": "0.0.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "11"
+  },
+  "socket": "true",
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json",
+      "flags": {}
+    },
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json",
+      "flags": {}
+    }
+  ],
+  "scripts": [
+	"scripts/vasesen.js"
+  ],
+  "url": "https://github.com/Saibot393/perceptive",
+  "download": "https://github.com/Saibot393/perceptive/archive/refs/tags/v3.0.3.zip",
+  "manifest": "https://github.com/Saibot393/perceptive/releases/latest/download/module.json",
+  "readme": "https://github.com/Saibot393/perceptive/blob/main/README.md",
+  "changelog": "https://github.com/Saibot393/perceptive/blob/main/CHANGELOG.md",
+  "allowBugReporter": true
+}
