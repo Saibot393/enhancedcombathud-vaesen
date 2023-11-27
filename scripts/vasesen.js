@@ -12,7 +12,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 		gear: ["gear"]
     }
 	
-	VaesenECHItems = {
+	VaesenECHSlowItems = {
 		Flee : {
 			img: "modules/enhancedcombathud/icons/run.svg",
 			name: Translate("Titles.Flee"),
@@ -45,6 +45,141 @@ Hooks.on("argonInit", (CoreHUD) => {
 				description : Translate("Descriptions.TreatInjuries")
 			}
 		}
+	}
+	
+	VaesenECHFastItems = {
+		DrawWeapon : {
+			img: "icons/svg/sword.svg",
+			name: Translate("Titles.DrawWeapon"),
+			type : "base",
+			system : {
+				description : Translate("Descriptions.DrawWeapon")
+			}
+		},
+		Standup : {
+			img: "icons/svg/up.svg",
+			name: Translate("Titles.Standup"),
+			type : "base",
+			system : {
+				description : Translate("Descriptions.Standup")
+			}
+		},
+		Move : {
+			img: "modules/enhancedcombathud/icons/journey.svg",
+			name: Translate("Titles.Move"),
+			type : "base",
+			system : {
+				description : Translate("Descriptions.Move")
+			}
+		},
+		TakeCover : {
+			img: "modules/enhancedcombathud/icons/armor-upgrade.svg",
+			name: Translate("Titles.TakeCover"),
+			type : "base",
+			system : {
+				description : Translate("Descriptions.TakeCover")
+			}
+		}
+	}
+	
+	VaesenECHReactionItems = {
+		Dodge : {
+			img: "modules/enhancedcombathud/icons/dodging.svg",
+			name: Translate("Titles.Dodge"),
+			type : "base",
+			system : {
+				description : Translate("Descriptions.Dodge")
+			}
+		},
+		Parry : {
+			img: "modules/enhancedcombathud/icons/crossed-swords.svg",
+			name: Translate("Titles.Parry"),
+			type : "base",
+			system : {
+				description : Translate("Descriptions.Parry")
+			}
+		},
+		BreakFree : {
+			img: "modules/enhancedcombathud/icons/mighty-force.svg",
+			name: Translate("Titles.BreakFree"),
+			type : "base",
+			system : {
+				description : Translate("Descriptions.BreakFree")
+			}
+		},
+		Chase : {
+			img: "modules/enhancedcombathud/icons/walking-boot.svg",
+			name: Translate("Titles.Chase"),
+			type : "base",
+			system : {
+				description : Translate("Descriptions.Chase")
+			}
+		}
+	}
+	
+	async function getTooltipDetails(item, type) {
+		console.log(item, type);
+		
+		let title, description, itemType, subtitle, target, range, dt;
+		let damageTypes = [];
+		let properties = [];
+		let materialComponents = "";
+
+		if (type == "skill") {
+			title = CONFIG.DND5E.skills[item];
+			description = this.hudData.skills[item].tooltip;
+		} else if (type == "save") {
+			title = CONFIG.DND5E.abilities[item];
+			description = this.hudData.saves[item].tooltip;
+		} else {
+			if (!item || !item.system) return;
+
+			title = item.name;
+			description = item.system.description;
+			effect = item.system.effect
+			itemType = item.type;
+			skill = item.system.skill
+			target = item.labels?.target || "-";
+			range = item.system?.range || "-";
+			damage = item.system?.damage;
+			bonus = item.system?.bonus;
+			properties = [];
+			dt = item.labels?.damageTypes?.split(", ");
+			damageTypes = dt && dt.length ? dt : [];
+			materialComponents = "";
+
+			switch (itemType) {
+				case "weapon":
+					subtitle = skill;
+					properties.push(effect);
+					break;
+			}
+		}
+
+		if (description) description = await TextEditor.enrichHTML(description);
+		let details = [];
+		if (target || range) {
+			details = [
+				{
+					label: "enhancedcombathud.tooltip.range.name",
+					value: range,
+					align: "left",
+				},
+				{
+					label: "enhancedcombathud.tooltip.range.damage",
+					value: damage,
+					align: "left",
+				},
+				{
+					label: "enhancedcombathud.tooltip.range.bonus",
+					value: bonus,
+					align: "left",
+				},
+				align: ["left", "center", "center"],
+			];
+		}
+
+		return { title, description, subtitle, details, properties , footerText: materialComponents };
 	}
   
     class VaesenPortraitPanel extends ARGON.PORTRAIT.PortraitPanel {
@@ -250,29 +385,155 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		get label() {
-			return "Veasen.Action";
+			return "Veasen.SlowAction";
 		}
+		
+		get hasAction() {
+            return true;
+        }
 		
 		async _getButtons() {
 			const gearitems = this.actor.items.filter(item => item.type === "gear");
 			
-			const specialActions = Object.values(VaesenECHItems);
+			const specialActions = Object.values(VaesenECHSlowItems);
+
+			const buttons = [
+				new VaesenItemButton({ item: null, isWeaponSet: true, isPrimary: true }),
+				new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[0]), new VaesenSpecialActionButton(specialActions[1])),
+				new VaesenButtonPanelButton({type: "gear", items: gearitems, color: 0}),
+				new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[2]), new VaesenSpecialActionButton(specialActions[3]))
+			];
+			return buttons.filter(button => button.items == undefined || button.items.length);
+		}
+    }
+	
+    class VaesenFastActionPanel extends ARGON.MAIN.ActionPanel {
+		constructor(...args) {
+			super(...args);
+		}
+
+		get label() {
+			return "Veasen.FastAction";
+		}
+		
+		get hasAction() {
+            return true;
+        }
+		
+		async _getButtons() {
+			const gearitems = this.actor.items.filter(item => item.type === "gear");
+			
+			const specialActions = Object.values(VaesenECHFastItems);
 
 			const buttons = [
 			  new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[0]), new VaesenSpecialActionButton(specialActions[1])),
-			  new VaesenButtonPanelButton({type: "gear", items: gearitems, color: 0}),
 			  new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[2]), new VaesenSpecialActionButton(specialActions[3]))
 			];
 			return buttons.filter(button => button.items == undefined || button.items.length);
 		}
     }
-  
-  
-    class VaesenItemButton extends ARGON.MAIN.BUTTONS.ItemButton {
-      constructor(...args) {
-        super(...args);
-      }
+	
+    class VaesenReactionActionPanel extends ARGON.MAIN.ActionPanel {
+		constructor(...args) {
+			super(...args);
+		}
+
+		get label() {
+			return "Veasen.ReactionAction";
+		}
+		
+		async _getButtons() {
+			const gearitems = this.actor.items.filter(item => item.type === "gear");
+			
+			const specialActions = Object.values(VaesenECHReactionItems);
+
+			const buttons = [
+			  new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[0]), new VaesenSpecialActionButton(specialActions[1])),
+			  new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[2]), new VaesenSpecialActionButton(specialActions[3]))
+			];
+			return buttons.filter(button => button.items == undefined || button.items.length);
+		}
     }
+	
+	class VaesenItemButton extends ARGON.MAIN.BUTTONS.ItemButton {
+		constructor(...args) {
+			super(...args);
+		}
+
+		get hasTooltip() {
+			return true;
+		}
+
+		get targets() {
+			const item = this.item;
+			const validTargets = ["creature", "ally", "enemy"];
+			const actionType = item.system.actionType;
+			const targetType = item.system.target?.type;
+			if (validTargets.includes(targetType)) {
+				return item.system.target.value;
+			} else {
+				if (actionType === "mwak" || actionType === "rwak") {
+					return 1;
+				}
+			}
+			return null;
+		}
+
+		async getTooltipData() {
+			const tooltipData = await getTooltipDetails(this.item);
+			tooltipData.propertiesLabel = "enhancedcombathud.tooltip.properties.name";
+			return tooltipData;
+		}
+
+		async _onLeftClick(event) {
+			ui.ARGON.interceptNextDialog(event.currentTarget);
+			const used = await this.item.use({ event }, { event });
+			if (used) {
+				VaesenItemButton.consumeActionEconomy(this.item);
+			}
+		}
+
+		static consumeActionEconomy(item) {
+			const activationType = item.system.activation?.type;
+			let actionType = null;
+			for (const [type, types] of Object.entries(actionTypes)) {
+				if (types.includes(activationType)) actionType = type;
+			}
+			if (!actionType) return;
+			if (actionType === "action") {
+				ui.ARGON.components.main[0].isActionUsed = true;
+			} else if (actionType === "bonus") {
+				ui.ARGON.components.main[1].isActionUsed = true;
+			} else if (actionType === "reaction") {
+				ui.ARGON.components.main[2].isActionUsed = true;
+			} else if (actionType === "free") {
+				ui.ARGON.components.main[3].isActionUsed = true;
+			}
+		}
+
+		async render(...args) {
+			await super.render(...args);
+			if (this.item?.system.consumableType === "ammo") {
+				const weapons = this.actor.items.filter((item) => item.system.consume?.target === this.item.id);
+				ui.ARGON.updateItemButtons(weapons);
+			}
+		}
+
+		get quantity() {
+			const showQuantityItemTypes = ["consumable"];
+			const consumeType = this.item.system.consume?.type;
+			if (consumeType === "ammo") {
+				const ammoItem = this.actor.items.get(this.item.system.consume.target);
+				if (!ammoItem) return null;
+				return ammoItem.system.quantity;
+			} else if (consumeType === "attribute") {
+				return getProperty(this.actor.system, this.item.system.consume.target);
+			} else if (showQuantityItemTypes.includes(this.item.type)) {
+				return this.item.system.uses?.value ?? this.item.system.quantity;
+			}
+			return null;
+		}
+	}
   
     class VaesenButtonPanelButton extends ARGON.MAIN.BUTTONS.ButtonPanelButton {
       constructor({type, items, color}) {
@@ -341,18 +602,52 @@ Hooks.on("argonInit", (CoreHUD) => {
     }
 	
 	class VaesenSpecialActionButton extends ARGON.MAIN.BUTTONS.ActionButton {
-      constructor (specialItem) {
-        super();
-        this.item = new Item(specialItem);
-      }
+        constructor(specialItem) {
+			super();
+			this.item = new CONFIG.Item.documentClass(specialItem, {
+				parent: this.actor,
+			});
+		}
 
-      get label() {
-        return this.item.name;
-      }
+		get label() {
+			return this.item.name;
+		}
 
-      get icon() {
-        return this.item.img;
-      }
+		get icon() {
+			return this.item.img;
+		}
+
+		get hasTooltip() {
+			return true;
+		}
+
+		async getTooltipData() {
+			const tooltipData = await getTooltipDetails(this.item);
+			tooltipData.propertiesLabel = "enhancedcombathud.tooltip.properties.name";
+			return tooltipData;
+		}
+
+		async _onLeftClick(event) {
+			const useCE = game.modules.get("dfreds-convenient-effects")?.active && game.dfreds.effectInterface.findEffectByName(this.label);
+			let success = false;
+			if (useCE) {
+				success = true;
+				await game.dfreds.effectInterface.toggleEffect(this.label, { overlay: false, uuids: [this.actor.uuid] });
+			} else {
+				success = await this.item.use({ event }, { event });
+			}
+			if (success) {
+				DND5eItemButton.consumeActionEconomy(this.item);
+			}
+		}
+		/*
+		async _renderInner() { //to unsqish special action buttons
+			await super._renderInner();
+			
+			console.log(this.element.style);
+			this.element.style.minHeight = "100px";
+		}
+		*/
     }
 	
 	class VaesenWeaponSets extends ARGON.WeaponSets {
@@ -378,8 +673,6 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		async _onSetChange({sets, active}) {
-			const switchEquip = game.settings.get("enhancedcombathud", "switchEquip");
-			if (!switchEquip) return;
 			const updates = [];
 			const activeSet = sets[active];
 			const activeItems = Object.values(activeSet).filter((item) => item);
@@ -441,8 +734,11 @@ Hooks.on("argonInit", (CoreHUD) => {
     CoreHUD.definePortraitPanel(VaesenPortraitPanel);
     CoreHUD.defineDrawerPanel(VaesenDrawerPanel);
     CoreHUD.defineMainPanels([
-		VaesenSlowActionPanel
+		VaesenSlowActionPanel,
+		VaesenFastActionPanel,
+		VaesenReactionActionPanel
     ]);  
 	CoreHUD.defineMovementHud(null);
     CoreHUD.defineWeaponSets(VaesenWeaponSets);
+	CoreHUD.defineSupportedActorTypes(["player", "npc", "vaesen"]);
 });
