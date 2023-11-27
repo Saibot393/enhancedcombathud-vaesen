@@ -48,8 +48,111 @@ Hooks.on("argonInit", (CoreHUD) => {
     class VaesenPortraitPanel extends ARGON.PORTRAIT.PortraitPanel {
 		constructor(...args) {
 			super(...args);
+
+			Hooks.on("deleteActiveEffect", this.onEffectUpdate.bind(this));
+			Hooks.on("createActiveEffect", this.onEffectUpdate.bind(this));
 		}
-    }
+
+		get description() {
+			const { type, system } = this.actor;
+			const actor = this.actor;
+			
+			switch (type) {
+				case "player":
+					return `${system.bio.archetype}`;
+					break;
+				case "npc":
+					break;
+				case "vaesen":
+					break;
+				case "headquater":
+					return `${system.bio.building}, ${system.bio.location}`;
+					break;
+				default:
+					return "";
+					break;
+			}
+		}
+
+		get isDead() {
+			return false;
+		}
+		
+		async getConditionIcons() {
+			const Conditions = this.actor.system.condition;
+			
+			const PhysicalConditions = Object.keys(Conditions.physical.states).filter(Key => Conditions.physical.states[Key].isChecked);
+			const MentalConditions = Object.keys(Conditions.mental.states).filter(Key => Conditions.mental.states[Key].isChecked);
+			
+			const LeftIcons = PhysicalConditions.map((Condition) => {const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
+			
+																	return {img : ConditionInfo.icon, description : ConditionInfo.label}});
+																	
+			const RightIcons = MentalConditions.map((Condition) => {	const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
+			
+																		return {img : ConditionInfo.icon, description : ConditionInfo.label}});
+						
+			return {left : LeftIcons, right : RightIcons}
+		}
+
+		async getStatBlocks() {
+			const ActiveArmor = this.actor.items.find(Item => Item.type == "armor" && Item.system.isFav); //serach for favoured armor
+
+			const ArmorText = game.i18n.localize("ARMOR.NAME");
+
+			let Blocks = [];
+			
+			if (ActiveArmor) {
+				Blocks.push([
+								{
+									text: ArmorText,
+								},
+								{
+									text: ActiveArmor.system.protection,
+									color: "var(--ech-movement-baseMovement-background)",
+								},
+							]);
+			}
+			
+			return Blocks;
+		}
+		
+		async _renderInner(data) {
+			await super._renderInner(data);
+			const ConditionIcons = await this.getConditionIcons();
+			
+			if (ConditionIcons) {
+				for (const Side of ["left", "right"]) {
+					const SideIcons = ConditionIcons[Side];
+					
+					if (SideIcons) {
+						const SideIconsBar = document.createElement("div");
+						SideIconsBar.classList.add("status-effects");
+						//top:50%;transform:translateY(-50%)
+						SideIconsBar.setAttribute("style", `position:absolute;${Side}:0;display:flex;flex-direction:column;bot:0`);
+						
+						for (const Icon of SideIcons) {
+							const IconImage =  document.createElement("img");
+							IconImage.classList.add("effect-control");
+							
+							IconImage.setAttribute("src", Icon.img);
+							IconImage.setAttribute("style", "width: 50px;border-width:0px");
+							
+							SideIconsBar.appendChild(IconImage);
+						}
+						
+						this.element.appendChild(SideIconsBar)
+					}
+				}
+			}
+		}
+		
+		async onEffectUpdate(Effect) {
+			if (this.actor == Effect.parent) {
+				this.render();
+			}
+		}
+	}
   
     class VaesenDrawerPanel extends ARGON.DRAWER.DrawerPanel {
 		constructor(...args) {
@@ -112,6 +215,7 @@ Hooks.on("argonInit", (CoreHUD) => {
           case "spell": return "modules/enhancedcombathud/icons/spell-book.svg";
           case "feat": return "modules/enhancedcombathud/icons/mighty-force.svg";
           case "consumable": return "modules/enhancedcombathud/icons/drink-me.svg";
+		  case "gear": return "modules/enhancedcombathud/icons/backpack.svg";
         }
       }
   
@@ -174,16 +278,12 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
     }
 	*/
-
-    class VaesenSpellAccordion extends ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanel { }
   
     CoreHUD.definePortraitPanel(VaesenPortraitPanel);
     CoreHUD.defineDrawerPanel(VaesenDrawerPanel);
     CoreHUD.defineMainPanels([
 		VaesenSlowActionPanel
-    ]);
-  
-  
-  
-  
+    ]);  
+	//CoreHUD.defineMovementHud(null);
+    //CoreHUD.defineWeaponSets(DND5eWeaponSets);
 });
