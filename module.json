@@ -27,6 +27,9 @@
       "flags": {}
     }
   ],
+  "styles": [
+    "styles/VaesenCustom.css"
+  ],
   "scripts": [
 	"scripts/vasesen.js"
   ],

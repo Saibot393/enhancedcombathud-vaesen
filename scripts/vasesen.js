@@ -1,3 +1,5 @@
+const ModuleName = "enhancedcombathud-vaesen";
+
 function Translate(pContent) {
 	return pContent;
 }
@@ -86,11 +88,11 @@ Hooks.on("argonInit", (CoreHUD) => {
 			
 			const LeftIcons = PhysicalConditions.map((Condition) => {const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
 			
-																	return {img : ConditionInfo.icon, description : ConditionInfo.label}});
+																	return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition}});
 																	
-			const RightIcons = MentalConditions.map((Condition) => {	const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
+			const RightIcons = MentalConditions.map((Condition) => {const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
 			
-																		return {img : ConditionInfo.icon, description : ConditionInfo.label}});
+																	return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition}});
 						
 			return {left : LeftIcons, right : RightIcons}
 		}
@@ -98,7 +100,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 		async getStatBlocks() {
 			const ActiveArmor = this.actor.items.find(Item => Item.type == "armor" && Item.system.isFav); //serach for favoured armor
 
-			const ArmorText = game.i18n.localize("ARMOR.NAME");
+			const ArmorText = Translate("ARMOR.NAME");
 
 			let Blocks = [];
 			
@@ -137,13 +139,22 @@ Hooks.on("argonInit", (CoreHUD) => {
 							
 							IconImage.setAttribute("src", Icon.img);
 							IconImage.setAttribute("style", "width: 50px;border-width:0px");
+							IconImage.onclick = () => {this.removeCondtion(Icon.key)};
 							
 							SideIconsBar.appendChild(IconImage);
 						}
 						
-						this.element.appendChild(SideIconsBar)
+						this.element.appendChild(SideIconsBar);
 					}
 				}
+			}
+		}
+		
+		async removeCondtion(ConditionKey) {
+			const currentEffect = this.actor.effects.find(Effect => Effect.name == ConditionKey.toUpperCase());
+			
+			if (currentEffect) {
+				this.actor.deleteEmbeddedDocuments('ActiveEffect', [currentEffect.id]);
 			}
 		}
 		
@@ -153,12 +164,83 @@ Hooks.on("argonInit", (CoreHUD) => {
 			}
 		}
 	}
-  
-    class VaesenDrawerPanel extends ARGON.DRAWER.DrawerPanel {
+	
+	class VaesenDrawerPanel extends ARGON.DRAWER.DrawerPanel {
 		constructor(...args) {
 			super(...args);
 		}
-    }
+
+		get categories() {
+			const attributes = this.actor.system.attribute;
+			const skills = this.actor.system.skill;
+
+			const attributesButtons = Object.keys(attributes).map((attribute) => {
+				const attributeData = attributes[attribute];
+				return new ARGON.DRAWER.DrawerButton([
+					{
+						label: Translate(attributes[attribute].label),
+						onClick: () => console.log("Attribute Clicked " + attribute)
+					},
+					{
+						label: attributeData.value,
+						onClick: () => console.log("Attribute value Clicked" + attribute),
+						style: "display: flex; justify-content: flex-end;"
+					}
+				]);
+			});
+
+			const skillsButtons = Object.keys(skills).map((skill) => {
+				const skillData = skills[skill];
+				return new ARGON.DRAWER.DrawerButton([
+					{
+						label: Translate(CONFIG.vaesen.skills[skill]),
+						onClick: () => console.log("Skill Clicked" + skill)
+					},
+					{
+						label: `${skillData.value}<span style="margin: 0 1rem; filter: brightness(0.8)">(+${attributes[skills[skill].attribute].value})</span>`,
+						onClick: () => console.log("Skill value Clicked " + skill),
+						style: "display: flex; justify-content: flex-end;"
+					},
+				]);
+			});
+
+
+
+			return [
+				{
+					gridCols: "7fr 2fr 2fr",
+					captions: [
+						{
+							label: "Attributes",
+						},
+						{
+							label: "", //looks nicer
+						},
+						{
+							label: "Check",
+						}
+					],
+					buttons: attributesButtons,
+				},
+				{
+					gridCols: "7fr 2fr",
+					captions: [
+						{
+							label: "Skills",
+						},
+						{
+							label: "",
+						}
+					],
+					buttons: skillsButtons,
+				},
+			];
+		}
+
+		get title() {
+			return `${game.i18n.localize("enhancedcombathud.hud.saves.name")} / ${game.i18n.localize("enhancedcombathud.hud.skills.name")} / ${game.i18n.localize("enhancedcombathud.hud.tools.name")}`;
+		}
+	}
   
     class VaesenSlowActionPanel extends ARGON.MAIN.ActionPanel {
 		constructor(...args) {
@@ -270,6 +352,81 @@ Hooks.on("argonInit", (CoreHUD) => {
         return this.item.img;
       }
     }
+	
+	class VaesenWeaponSets extends ARGON.WeaponSets {
+		async getDefaultSets() {
+			const sets = await super.getDefaultSets();
+			if (this.actor.type !== "npc") return sets;
+			const actions = this.actor.items.filter((item) => item.type === "weapon" && item.system.activation?.type === "action");
+			const bonus = this.actor.items.filter((item) => item.type === "weapon" && item.system.activation?.type === "bonus");
+			return {
+				1: {
+					primary: actions[0]?.uuid ?? null,
+					secondary: bonus[0]?.uuid ?? null,
+				},
+				2: {
+					primary: actions[1]?.uuid ?? null,
+					secondary: bonus[1]?.uuid ?? null,
+				},
+				3: {
+					primary: actions[2]?.uuid ?? null,
+					secondary: bonus[2]?.uuid ?? null,
+				},
+			};
+		}
+
+		async _onSetChange({sets, active}) {
+			const switchEquip = game.settings.get("enhancedcombathud", "switchEquip");
+			if (!switchEquip) return;
+			const updates = [];
+			const activeSet = sets[active];
+			const activeItems = Object.values(activeSet).filter((item) => item);
+			const inactiveSets = Object.values(sets).filter((set) => set !== activeSet);
+			const inactiveItems = inactiveSets.flatMap((set) => Object.values(set)).filter((item) => item);
+			activeItems.forEach((item) => {
+				if(!item.system?.equipped) updates.push({_id: item.id, "system.equipped": true});
+			});
+			inactiveItems.forEach((item) => {
+				if(item.system?.equipped) updates.push({_id: item.id, "system.equipped": false});
+			});
+			return await this.actor.updateEmbeddedDocuments("Item", updates);
+		}
+
+		async _getSets() { //overwrite because slots.primary/secondary contains id, not uuid
+			console.log(this);
+			const sets = mergeObject(await this.getDefaultSets(), deepClone(this.actor.getFlag("enhancedcombathud", "weaponSets") || {}));
+
+			for (const [set, slots] of Object.entries(sets)) {
+				slots.primary = slots.primary ? await this.actor.items.get(slots.primary) : null;
+				slots.secondary = slots.secondary ? await this.actor.items.get(slots.secondary) : null;
+			}
+			return sets;
+		}
+		
+		async _onDrop(event) {
+			try {      
+				event.preventDefault();
+				event.stopPropagation();
+				const data = JSON.parse(event.dataTransfer.getData("text/plain"));
+				if(data?.type !== "weapon") return;
+				const set = event.currentTarget.dataset.set;
+				const slot = event.currentTarget.dataset.slot;
+				const sets = this.actor.getFlag("enhancedcombathud", "weaponSets") || {};
+				console.log(data);
+				sets[set] = sets[set] || {};
+				sets[set][slot] = data.itemId;
+
+				await this.actor.setFlag("enhancedcombathud", "weaponSets", sets);
+				await this.render();
+			} catch (error) {
+				
+			}
+		}
+		
+		get template() {
+			return `modules/${ModuleName}/templates/VaesenWeaponSets.hbs`;
+		}
+    }
   
     /*
     class VaesenEquipmentButton extends ARGON.MAIN.BUTTONS.EquipmentButton {
@@ -284,6 +441,6 @@ Hooks.on("argonInit", (CoreHUD) => {
     CoreHUD.defineMainPanels([
 		VaesenSlowActionPanel
     ]);  
-	//CoreHUD.defineMovementHud(null);
-    //CoreHUD.defineWeaponSets(DND5eWeaponSets);
+	CoreHUD.defineMovementHud(null);
+    CoreHUD.defineWeaponSets(VaesenWeaponSets);
 });
