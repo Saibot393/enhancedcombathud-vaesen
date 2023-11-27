@@ -355,7 +355,7 @@
     left: 50%;
     position: absolute;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 100%) translateY(2.5px);
     transition: all 0.1s ease-in-out;
     width: 0px;
     pointer-events: none;
@@ -365,6 +365,7 @@
     border-radius: 50%;
     height: 25px;
     width: 25px;
+	transform: translate(-50%, 50%);
 }
 .weapon-set.active:after {
     border-radius: 50%;
@@ -373,7 +374,7 @@
     left: 50%;
     position: absolute;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 100%) translateY(2.5px);
     width: 15px;
     pointer-events: none;
 }

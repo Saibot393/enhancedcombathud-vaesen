@@ -148,6 +148,8 @@ Hooks.on("argonInit", (CoreHUD) => {
 					}
 				}
 			}
+			
+			this.element.querySelector(".player-buttons").style.right = "0%";
 		}
 		
 		async removeCondtion(ConditionKey) {
