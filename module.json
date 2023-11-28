@@ -33,6 +33,26 @@
   "esmodules": [
 	"scripts/vasesenui.js"
   ],
+  "relationships": {
+	"requires": [
+		{
+			"id": "enhancedcombathud",
+			"type": "module",
+			"compatibility": {}
+		}
+	],
+	"systems": [
+		{
+			"id": "vaesen",
+			"type": "system",
+			"compatibility": {}
+		}
+	]
+  },
+  "compatibility": {
+	"minimum": "11",
+	"verified": "11"
+  },
   "url": "https://github.com/Saibot393/enhancedcombathud-vaesen",
   "download": "https://github.com/Saibot393/enhancedcombathud-vaesen/archive/refs/tags/v1.0.0.zip",
   "manifest": "https://github.com/Saibot393/enhancedcombathud-vaesen/releases/latest/download/module.json",
