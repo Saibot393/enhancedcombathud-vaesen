@@ -30,8 +30,8 @@
   "styles": [
     "styles/VaesenCustom.css"
   ],
-  "scripts": [
-	"scripts/vasesen.js"
+  "esmodules": [
+	"scripts/vasesenui.js"
   ],
   "url": "https://github.com/Saibot393/perceptive",
   "download": "https://github.com/Saibot393/perceptive/archive/refs/tags/v3.0.3.zip",
