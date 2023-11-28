@@ -1,5 +1,7 @@
 const ModuleName = "enhancedcombathud-vaesen";
 
+const ItemReplacementID = "_argonUI_";
+
 var VaesenECHSlowItems = {};
 
 var VaesenECHFastItems = {};
@@ -143,6 +145,12 @@ function registerVaesenECHSItems () {
 			if (itemkey != "groupflags") {
 				itemset[itemkey].flags = {};
 				itemset[itemkey].flags[ModuleName] = {...itemset.groupflags, ...itemset[itemkey].flags[ModuleName]};
+				
+				let ReplacementItem = game.items.find(item => item.name == ItemReplacementID + itemkey);
+				
+				if (ReplacementItem) {
+					itemset[itemkey].system.description = ReplacementItem.system.description;
+				}
 			}
 		}
 		
