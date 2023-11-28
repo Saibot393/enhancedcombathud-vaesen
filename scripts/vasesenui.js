@@ -40,6 +40,14 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		get isDead() {
+			if (this.actor.type == "player") {
+				return this.actor.system.condition.mental?.isBroken || this.actor.system.condition.physical?.isBroken;
+			}
+			
+			if (this.actor.type == "npc") {
+				return this.actor.system.condition.mental?.value == 0 || this.actor.system.condition.physical?.value == 0;
+			}
+			
 			return false;
 		}
 		
@@ -76,7 +84,14 @@ Hooks.on("argonInit", (CoreHUD) => {
 						}
 					}
 					
-					LeftIcons = vaesenConditions.map((Condition, i) => {return {img : ConditionImages[i], description : Condition.system.description, key : Condition.id, click : async () => {await Condition.update({system : {active : false}}); this.render()}}});
+					LeftIcons = vaesenConditions.map((Condition, i) => {return {
+						img : ConditionImages[i], 
+						description : Condition.system.description, 
+						key : Condition.id, 
+						click : async () => {
+							await this.actor.items.filter(item => item.type == "condition").reverse().find(item => item.system.active)?.update({system : {active : false}});
+							this.render()
+						}}});
 					break;
 			}
 						
@@ -97,19 +112,62 @@ Hooks.on("argonInit", (CoreHUD) => {
 			}
 
 			const ArmorText = game.i18n.localize("ARMOR.NAME");
-
+			
+			let physical;
+			let mental;
+			
+			if (this.actor.type == "npc") {
+				physical = this.actor.system.condition.physical;
+				
+				mental = this.actor.system.condition.mental;
+			}
+			
 			let Blocks = [];
+			
+			if (physical) {
+				Blocks.push([
+					{
+						text: game.i18n.localize("CONDITION.PHYSICAL"),
+					},
+					{
+						text: physical.value,
+					},
+					{
+						text: "/",
+					},
+					{
+						text: physical.max
+					},
+				]);				
+			}
 			
 			if (ActiveArmor) {
 				Blocks.push([
-								{
-									text: ArmorText,
-								},
-								{
-									text: ActiveArmor.system.protection,
-									color: "var(--ech-movement-baseMovement-background)",
-								},
-							]);
+					{
+						text: ArmorText,
+					},
+					{
+						text: ActiveArmor.system.protection,
+						color: "var(--ech-movement-baseMovement-background)",
+					},
+				]);
+			}
+			
+			if (mental) {
+				Blocks.push([
+					{
+						text: game.i18n.localize("CONDITION.MENTAL"),
+					},
+					{
+						text: mental.value,
+					},
+					{
+						text: "/",
+					},
+					{
+						text: mental.max
+					},
+				]);				
 			}
 			
 			return Blocks;
@@ -117,6 +175,10 @@ Hooks.on("argonInit", (CoreHUD) => {
 		
 		async _renderInner(data) {
 			await super._renderInner(data);
+			
+			//this.element.querySelector(".death-save-success").style.visibility = "hidden";
+			//this.element.querySelector(".death-save-fail").style.visibility = "hidden";
+			
 			const ConditionIcons = await this.getConditionIcons();
 			
 			if (ConditionIcons) {
@@ -273,7 +335,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		get label() {
-			return "Veasen.SlowAction";
+			return ModuleName+".Titles.SlowAction";
 		}
 		
 		get maxActions() {
@@ -314,7 +376,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		get label() {
-			return "Veasen.FastAction";
+			return ModuleName+".Titles.FastAction";
 		}
 		
 		get maxActions() {
@@ -347,7 +409,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		get label() {
-			return "Veasen.ReactionAction";
+			return ModuleName+".Titles.ReAction";
 		}
 		
 		async _getButtons() {
@@ -375,7 +437,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		async getTooltipData() {
-			const tooltipData = await getTooltipDetails(this.item);
+			const tooltipData = await getTooltipDetails(this.item, this.actor.type);
 			return tooltipData;
 		}
 
@@ -403,7 +465,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 				used = true;
 			}
 			
-			if (this.item.type == "gear") {
+			if (this.item.type == "gear" || this.item.type == "magic") {
 				const data = this.item.data;
 				const type = data.type;
 				/*
@@ -495,14 +557,48 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		async getTooltipData() {
-			const tooltipData = await getTooltipDetails(this.item);
+			const tooltipData = await getTooltipDetails(this.item, this.actor.type);
 			return tooltipData;
 		}
 
 		async _onLeftClick(event) {
-			var used = false;
+			var used = true;
 			
-			VaesenSpecialActionButton.consumeActionEconomy(this.item);
+			const item = this.item;
+			
+			switch(this.actor.type) {
+				case "player" :
+				case "npc" :
+					let skill = item.system.skill;
+					
+					if (skill instanceof Array) {
+						const activeSet = await ui.ARGON.components.weaponSets?.getactiveSet();
+						
+						if (activeSet?.primary?.system.skill) {
+							skill = skill.find(key => key == activeSet.primary.system.skill);
+						}
+						
+						if (skill instanceof Array) {
+							skill = undefined;
+						}
+					}
+					
+					if (skill) {
+						this.actor.sheet.rollSkill(skill);
+					}
+					break;
+				case "vaesen" : 
+					let attribute = item.system.vaesenattribute;
+					
+					if (attribute) {
+						this.actor.sheet.rollAttribute(attribute);
+					}
+					break;					
+			}
+			
+			if (used) {
+				VaesenSpecialActionButton.consumeActionEconomy(this.item);
+			}
 		}
 
 		static consumeActionEconomy(item) {
@@ -613,6 +709,11 @@ Hooks.on("argonInit", (CoreHUD) => {
 		
 		get template() {
 			return `modules/${ModuleName}/templates/VaesenWeaponSets.hbs`;
+		}
+		
+		async getactiveSet() {
+			const sets = await this._getSets();
+			return sets[this.actor.getFlag("enhancedcombathud", "activeWeaponSet")];
 		}
     }
   

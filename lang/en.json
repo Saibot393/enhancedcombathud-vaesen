@@ -1,5 +1,36 @@
 {
-	"argon-vaesen" : {
+	"enhancedcombathud-vaesen" : {
+		"Titles" : {
+			"SlowAction"				: "SLOW ACTIONS",
+			"FastAction"				: "FAST ACTIONS",
+			"ReAction"					: "REACTIONS",
+			"Flee"						: "Flee",
+			"WPG"						: "Wrestle",
+			"Survey"					: "Survey",
+			"TreatInjuries"				: "Treat injuries",
+			"DrawWeapon"				: "Draw weapon",
+			"Standup"					: "Stand up",
+			"Move"						: "Move",
+			"TakeCover"					: "Take cover",
+			"Dodge"						: "Dodge",
+			"Parry"						: "Parry",
+			"BreakFree"					: "Break free",
+			"Chase"						: "Chase"
+		},
 		
+		"Descriptions" : {
+			"Flee"						: "See Vaesen core rules book p.62",
+			"WPG"						: "See Vaesen core rules book p.62",
+			"Survey"					: "See Vaesen core rules book p.62",
+			"TreatInjuries"				: "See Vaesen core rules book p.71",
+			"DrawWeapon"				: "See Vaesen core rules book p.60",
+			"Standup"					: "See Vaesen core rules book p.60",
+			"Move"						: "See Vaesen core rules book p.60",
+			"TakeCover"					: "See Vaesen core rules book p.73",
+			"Dodge"						: "See Vaesen core rules book p.61",
+			"Parry"						: "See Vaesen core rules book p.61",
+			"BreakFree"					: "See Vaesen core rules book p.62",
+			"Chase"						: "See Vaesen core rules book p.62"
+		}
 	}
 }

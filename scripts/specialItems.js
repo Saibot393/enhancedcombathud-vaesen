@@ -16,7 +16,9 @@ function registerVaesenECHSItems () {
 			name: game.i18n.localize(ModuleName+".Titles.Flee"),
 			type : "base",
 			system : {
-				description : game.i18n.localize(ModuleName+".Descriptions.Flee")
+				description : game.i18n.localize(ModuleName+".Descriptions.Flee"),
+				skill : "agility",
+				vaesenattribute : "bodyControl"
 			}
 		},
 		WPG : {
@@ -24,7 +26,9 @@ function registerVaesenECHSItems () {
 			name: game.i18n.localize(ModuleName+".Titles.WPG"),
 			type : "base",
 			system : {
-				description : game.i18n.localize(ModuleName+".Descriptions.WPG")
+				description : game.i18n.localize(ModuleName+".Descriptions.WPG"),
+				skill : "force",
+				vaesenattribute : "might"
 			}
 		},
 		Survey : {
@@ -32,7 +36,9 @@ function registerVaesenECHSItems () {
 			name: game.i18n.localize(ModuleName+".Titles.Survey"),
 			type : "base",
 			system : {
-				description : game.i18n.localize(ModuleName+".Descriptions.Survey")
+				description : game.i18n.localize(ModuleName+".Descriptions.Survey"),
+				skill : "observation",
+				vaesenattribute : "bodyControl"
 			}
 		},
 		TreatInjuries : {
@@ -40,7 +46,9 @@ function registerVaesenECHSItems () {
 			name: game.i18n.localize(ModuleName+".Titles.TreatInjuries"),
 			type : "base",
 			system : {
-				description : game.i18n.localize(ModuleName+".Descriptions.TreatInjuries")
+				description : game.i18n.localize(ModuleName+".Descriptions.TreatInjuries"),
+				skill : "medicine",
+				vaesenattribute : "bodyControl"
 			}
 		}
 	}
@@ -92,7 +100,9 @@ function registerVaesenECHSItems () {
 			name: game.i18n.localize(ModuleName+".Titles.Dodge"),
 			type : "base",
 			system : {
-				description : game.i18n.localize(ModuleName+".Descriptions.Dodge")
+				description : game.i18n.localize(ModuleName+".Descriptions.Dodge"),
+				skill : "agility",
+				vaesenattribute : "bodyControl"
 			}
 		},
 		Parry : {
@@ -100,7 +110,9 @@ function registerVaesenECHSItems () {
 			name: game.i18n.localize(ModuleName+".Titles.Parry"),
 			type : "base",
 			system : {
-				description : game.i18n.localize(ModuleName+".Descriptions.Parry")
+				description : game.i18n.localize(ModuleName+".Descriptions.Parry"),
+				skill : ["closeCombat", "force"],
+				vaesenattribute : "might"
 			}
 		},
 		BreakFree : {
@@ -108,7 +120,9 @@ function registerVaesenECHSItems () {
 			name: game.i18n.localize(ModuleName+".Titles.BreakFree"),
 			type : "base",
 			system : {
-				description : game.i18n.localize(ModuleName+".Descriptions.BreakFree")
+				description : game.i18n.localize(ModuleName+".Descriptions.BreakFree"),
+				skill : "force",
+				vaesenattribute : "might"
 			}
 		},
 		Chase : {
@@ -116,7 +130,9 @@ function registerVaesenECHSItems () {
 			name: game.i18n.localize(ModuleName+".Titles.Chase"),
 			type : "base",
 			system : {
-				description : game.i18n.localize(ModuleName+".Descriptions.Chase")
+				description : game.i18n.localize(ModuleName+".Descriptions.Chase"),
+				skill : "agility",
+				vaesenattribute : "bodyControl"
 			}
 		}
 	}
