@@ -8,6 +8,9 @@ var VaesenECHReactionItems = {};
 
 function registerVaesenECHSItems () {
 	VaesenECHSlowItems = {
+		groupflags : {
+			actiontype : "slow"
+		},
 		Flee : {
 			img: "modules/enhancedcombathud/icons/run.svg",
 			name: game.i18n.localize(ModuleName+".Titles.Flee"),
@@ -42,12 +45,10 @@ function registerVaesenECHSItems () {
 		}
 	}
 	
-	for (let itemkey of Object.keys(VaesenECHSlowItems)) {
-		VaesenECHSlowItems[itemkey].flags = {};
-		VaesenECHSlowItems[itemkey].flags[ModuleName] = {actiontype : "slow"};
-	}
-	
 	VaesenECHFastItems = {
+		groupflags : {
+			actiontype : "fast"
+		},
 		DrawWeapon : {
 			img: "icons/svg/sword.svg",
 			name: game.i18n.localize(ModuleName+".Titles.DrawWeapon"),
@@ -82,12 +83,10 @@ function registerVaesenECHSItems () {
 		}
 	}
 	
-	for (let itemkey of Object.keys(VaesenECHFastItems)) {
-		VaesenECHFastItems[itemkey].flags = {};
-		VaesenECHFastItems[itemkey].flags[ModuleName] = {actiontype : "fast"};
-	}
-	
 	VaesenECHReactionItems = {
+		groupflags : {
+			actiontype : "react"
+		},
 		Dodge : {
 			img: "modules/enhancedcombathud/icons/dodging.svg",
 			name: game.i18n.localize(ModuleName+".Titles.Dodge"),
@@ -122,9 +121,16 @@ function registerVaesenECHSItems () {
 		}
 	}
 	
-	for (let itemkey of Object.keys(VaesenECHReactionItems)) {
-		VaesenECHReactionItems[itemkey].flags = {};
-		VaesenECHReactionItems[itemkey].flags[ModuleName] = {actiontype : "react"};
+	//some preparation
+	for (let itemset of [VaesenECHSlowItems, VaesenECHFastItems, VaesenECHReactionItems]) {
+		for (let itemkey of Object.keys(itemset)) {
+			if (itemkey != "groupflags") {
+				itemset[itemkey].flags = {};
+				itemset[itemkey].flags[ModuleName] = {...itemset.groupflags, ...itemset[itemkey].flags[ModuleName]};
+			}
+		}
+		
+		delete itemset.groupflags;
 	}
 }
 

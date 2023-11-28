@@ -392,7 +392,6 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		static consumeActionEconomy(item) {
-			
 			switch (item.flags[ModuleName].actiontype) {
 				case "slow":
 					ui.ARGON.components.main[0].isActionUsed = true;
@@ -473,7 +472,6 @@ Hooks.on("argonInit", (CoreHUD) => {
 				const set = event.currentTarget.dataset.set;
 				const slot = event.currentTarget.dataset.slot;
 				const sets = this.actor.getFlag("enhancedcombathud", "weaponSets") || {};
-				console.log(data);
 				sets[set] = sets[set] || {};
 				sets[set][slot] = data.itemId;
 
