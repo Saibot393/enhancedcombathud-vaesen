@@ -12,7 +12,7 @@ function registerVaesenECHSItems () {
 			actiontype : "slow"
 		},
 		Flee : {
-			img: "modules/enhancedcombathud/icons/run.svg",
+			img: "modules/enhancedcombathud/icons/svg/run.svg",
 			name: game.i18n.localize(ModuleName+".Titles.Flee"),
 			type : "base",
 			system : {
@@ -20,7 +20,7 @@ function registerVaesenECHSItems () {
 			}
 		},
 		WPG : {
-			img: "modules/enhancedcombathud/icons/shield-bash.svg",
+			img: "modules/enhancedcombathud/icons/svg/shield-bash.svg",
 			name: game.i18n.localize(ModuleName+".Titles.WPG"),
 			type : "base",
 			system : {
@@ -66,7 +66,7 @@ function registerVaesenECHSItems () {
 			}
 		},
 		Move : {
-			img: "modules/enhancedcombathud/icons/journey.svg",
+			img: "modules/enhancedcombathud/icons/svg/journey.svg",
 			name: game.i18n.localize(ModuleName+".Titles.Move"),
 			type : "base",
 			system : {
@@ -74,7 +74,7 @@ function registerVaesenECHSItems () {
 			}
 		},
 		TakeCover : {
-			img: "modules/enhancedcombathud/icons/armor-upgrade.svg",
+			img: "modules/enhancedcombathud/icons/svg/armor-upgrade.svg",
 			name: game.i18n.localize(ModuleName+".Titles.TakeCover"),
 			type : "base",
 			system : {
@@ -88,7 +88,7 @@ function registerVaesenECHSItems () {
 			actiontype : "react"
 		},
 		Dodge : {
-			img: "modules/enhancedcombathud/icons/dodging.svg",
+			img: "modules/enhancedcombathud/icons/svg/dodging.svg",
 			name: game.i18n.localize(ModuleName+".Titles.Dodge"),
 			type : "base",
 			system : {
@@ -96,7 +96,7 @@ function registerVaesenECHSItems () {
 			}
 		},
 		Parry : {
-			img: "modules/enhancedcombathud/icons/crossed-swords.svg",
+			img: "modules/enhancedcombathud/icons/svg/crossed-swords.svg",
 			name: game.i18n.localize(ModuleName+".Titles.Parry"),
 			type : "base",
 			system : {
@@ -104,7 +104,7 @@ function registerVaesenECHSItems () {
 			}
 		},
 		BreakFree : {
-			img: "modules/enhancedcombathud/icons/mighty-force.svg",
+			img: "modules/enhancedcombathud/icons/svg/mighty-force.svg",
 			name: game.i18n.localize(ModuleName+".Titles.BreakFree"),
 			type : "base",
 			system : {
@@ -112,7 +112,7 @@ function registerVaesenECHSItems () {
 			}
 		},
 		Chase : {
-			img: "modules/enhancedcombathud/icons/walking-boot.svg",
+			img: "modules/enhancedcombathud/icons/svg/walking-boot.svg",
 			name: game.i18n.localize(ModuleName+".Titles.Chase"),
 			type : "base",
 			system : {

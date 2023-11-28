@@ -76,7 +76,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 						}
 					}
 					
-					LeftIcons = vaesenConditions.map((Condition, i) => {return {img : ConditionImages[i], description : Condition.system.description, key : Condition.id, click : () => {Condition.update({system : {active : false}})}}});
+					LeftIcons = vaesenConditions.map((Condition, i) => {return {img : ConditionImages[i], description : Condition.system.description, key : Condition.id, click : async () => {await Condition.update({system : {active : false}}); this.render()}}});
 					break;
 			}
 						
@@ -276,19 +276,34 @@ Hooks.on("argonInit", (CoreHUD) => {
 			return "Veasen.SlowAction";
 		}
 		
-		get hasAction() {
-            return true;
+		get maxActions() {
+            return 1;
         }
+		
+		get currentActions() {
+			return this.isActionUsed ? 0 : 1;
+		}
+		
+		_onNewRound(combat) {
+			this.isActionUsed = false;
+			this.updateActionUse();
+		}
 		
 		async _getButtons() {
 			const specialActions = Object.values(VaesenECHSlowItems);
 
-			const buttons = [
-				new VaesenItemButton({ item: null, isWeaponSet: true, isPrimary: true }),
-				new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[0]), new VaesenSpecialActionButton(specialActions[1])),
-				new VaesenButtonPanelButton({type: "gear", color: 0}),
-				new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[2]), new VaesenSpecialActionButton(specialActions[3]))
-			];
+			let buttons = [];
+			
+			buttons.push(new VaesenItemButton({ item: null, isWeaponSet: true, isPrimary: true }));
+			buttons.push(new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[0]), new VaesenSpecialActionButton(specialActions[1])));
+			
+			if (this.actor.type == "vaesen" || this.actor.type == "npc" && this.actor.items.find(item => item.type == "magic")) {
+				buttons.push(new VaesenButtonPanelButton({type: "magic", color: 0}));
+			}
+			
+			buttons.push(new VaesenButtonPanelButton({type: "gear", color: 0}));
+			buttons.push(new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[2]), new VaesenSpecialActionButton(specialActions[3])));
+			
 			return buttons.filter(button => button.items == undefined || button.items.length);
 		}
     }
@@ -302,9 +317,18 @@ Hooks.on("argonInit", (CoreHUD) => {
 			return "Veasen.FastAction";
 		}
 		
-		get hasAction() {
-            return true;
+		get maxActions() {
+            return 1;
         }
+		
+		get currentActions() {
+			return this.isActionUsed ? 0 : 1;
+		}
+		
+		_onNewRound(combat) {
+			this.isActionUsed = false;
+			this.updateActionUse();
+		}
 		
 		async _getButtons() {
 			const specialActions = Object.values(VaesenECHFastItems);
@@ -405,8 +429,9 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		static consumeActionEconomy(item) {
-			if (item.type == "weapon") {
+			if (item.type == "weapon" || item.type == "attack") {
 				ui.ARGON.components.main[0].isActionUsed = true;
+				ui.ARGON.components.main[0].updateActionUse();
 			}
 		}
 
@@ -433,12 +458,14 @@ Hooks.on("argonInit", (CoreHUD) => {
 		get label() {
 			switch (this.type) {
 				case "gear": return "GEAR.NAME";
+				case "magic": return "MAGIC.NAME";
 			}
 		}
 
 		get icon() {
 			switch (this.type) {
-				case "gear": return "modules/enhancedcombathud/icons/backpack.svg";
+				case "gear": return "modules/enhancedcombathud/icons/svg/backpack.svg";
+				case "magic": return "modules/enhancedcombathud/icons/svg/spell-book.svg";
 			}
 		}
   
@@ -482,21 +509,26 @@ Hooks.on("argonInit", (CoreHUD) => {
 			switch (item.flags[ModuleName].actiontype) {
 				case "slow":
 					ui.ARGON.components.main[0].isActionUsed = true;
+					ui.ARGON.components.main[0].updateActionUse();
 					break;
 				case "fast":
 					if (ui.ARGON.components.main[1].isActionUsed) {
 						ui.ARGON.components.main[0].isActionUsed = true;
+						ui.ARGON.components.main[0].updateActionUse();
 					}
 					else {
 						ui.ARGON.components.main[1].isActionUsed = true;
+						ui.ARGON.components.main[1].updateActionUse()
 					}
 					break;
 				case "react":
 					if (ui.ARGON.components.main[1].isActionUsed) {
 						ui.ARGON.components.main[0].isActionUsed = true;
+						ui.ARGON.components.main[0].updateActionUse()
 					}
 					else {
 						ui.ARGON.components.main[1].isActionUsed = true;
+						ui.ARGON.components.main[1].updateActionUse()
 					}
 					break;
 			}
