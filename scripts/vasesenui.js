@@ -86,7 +86,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 					
 					LeftIcons = vaesenConditions.map((Condition, i) => {return {
 						img : ConditionImages[i], 
-						description : Condition.system.description, 
+						description : Condition.name, 
 						key : Condition.id, 
 						click : async () => {
 							await this.actor.items.filter(item => item.type == "condition").reverse().find(item => item.system.active)?.update({system : {active : false}});
@@ -198,6 +198,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 							IconImage.setAttribute("src", Icon.img);
 							IconImage.setAttribute("style", "width: 50px;border-width:0px");
 							IconImage.onclick = () => {Icon.click()};
+							IconImage.setAttribute("data-tooltip", Icon.description);
 							
 							SideIconsBar.appendChild(IconImage);
 						}
