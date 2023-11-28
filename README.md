@@ -7,7 +7,7 @@ An implementation of the [Argon - Combat HUD](https://foundryvtt.com/packages/en
 
 ### The documentation for the core argon features can be found [here](https://api.theripper93.com/modulewiki/enhancedcombathud/free)
 
-This module adjust various features to the Vaesen system:
+This module adjust various Argon features for the Vaesen system:
 - **Portrait**
     - For Players and Vaesen the current conditions will be displayed aa icons and can be removed via left click
     - For npcs the the values of the physical and mental conditions will be displayed
