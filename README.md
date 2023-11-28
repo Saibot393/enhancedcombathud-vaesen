@@ -9,11 +9,11 @@ An implementation of the [Argon - Combat HUD](https://foundryvtt.com/packages/en
 
 This module adjust various features to the Vaesen system:
 - **Portrait**
-    - For Players and Vaesen the current conditions will be displayed ad icons and can be removed via left click
+    - For Players and Vaesen the current conditions will be displayed aa icons and can be removed via left click
     - For npcs the the values of the physical and mental conditions will be displayed
     - The favoured armor will be displayed
 - **Action tracking** takes the difference of slow and fast actions into account and allows for the use of an available slow action for a fast action
-- **Skills and Attributes** addapt to the actor type (player,npc,vaesen)
+- **Skills and Attributes** adapt to the actor type (player,npc,vaesen)
 - **Weapon Sets** use the favoured weapons by default
 - **Tooltips** will display used skills/attributes, descriptions, use cases, the bonus, the damage, and the range where applicable
 
@@ -22,14 +22,14 @@ Due to licensing i am not able to include official text from the book for the de
 - "wrestle":`WPG`
 - "survey":`Survey`
 - "treat injuries":`TreatInjuries`
-- "draw weapon":'DrawWeapon'
-- "stand up":'Standup'
-- "move":'Move'
-- "take cover":'TakeCover'
-- "dodge":'Dodge'
-- "parry":'Parry'
-- "break free":'BreakFree'
-- "chase":'Chase'
+- "draw weapon":`DrawWeapon`
+- "stand up":`Standup`
+- "move":`Move`
+- "take cover":`TakeCover`
+- "dodge":`Dodge`
+- "parry":`Parry`
+- "break free":`BreakFree`
+- "chase":`Chase`
 
 Due to the way movement works in Vaesen the Movement Tracker is not (yet?) available to in this implementation.
 
