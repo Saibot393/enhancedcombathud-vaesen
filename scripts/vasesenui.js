@@ -1,6 +1,7 @@
 import {registerVaesenECHSItems, VaesenECHSlowItems, VaesenECHFastItems, VaesenECHReactionItems} from "./specialItems.js";
 import {getTooltipDetails} from "./utils.js";
-import {buildChatCard} from "/systems/vaesen/script/util/chat.js"
+import {buildChatCard} from "/systems/vaesen/script/util/chat.js";
+import {prepareRollNewDialog} from "/systems/vaesen/script/util/roll.js";
 
 const ModuleName = "enhancedcombathud-vaesen";
 
@@ -43,24 +44,57 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 		
 		async getConditionIcons() {
-			const Conditions = this.actor.system.condition;
+			let LeftIcons = [];
+			let RightIcons = [];
 			
-			const PhysicalConditions = Object.keys(Conditions.physical.states).filter(Key => Conditions.physical.states[Key].isChecked);
-			const MentalConditions = Object.keys(Conditions.mental.states).filter(Key => Conditions.mental.states[Key].isChecked);
+			switch (this.actor.type) {
+				case "player":
+					const playerConditions = this.actor.system.condition;
+					
+					const PhysicalConditions = Object.keys(playerConditions.physical.states).filter(Key => playerConditions.physical.states[Key].isChecked);
+					const MentalConditions = Object.keys(playerConditions.mental.states).filter(Key => playerConditions.mental.states[Key].isChecked);
 			
-			const LeftIcons = PhysicalConditions.map((Condition) => {const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
-			
-																	return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition}});
-																	
-			const RightIcons = MentalConditions.map((Condition) => {const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
-			
-																	return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition}});
+					LeftIcons = PhysicalConditions.map((Condition) => {	const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
+					
+																		return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition, click : () => {this.removeCondtion(Condition)}}});
+																			
+					RightIcons = MentalConditions.map((Condition) => {	const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
+					
+																		return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition, click : () => {this.removeCondtion(Condition)}}});
+					break;
+				case "vaesen":
+					const vaesenConditions = this.actor.items.filter(item => item.type == "condition" && item.system.active);
+					
+					let ConditionImages = []
+					
+					for (let i = 0; i < vaesenConditions.length; i++) {
+						if (vaesenConditions[i].img == "icons/svg/item-bag.svg" && i <= 10) {
+							ConditionImages[i] = `systems/vaesen/asset/counter_tokens/${i+1}.png`; //nicer than a simple bag
+						}
+						else {
+							ConditionImages[i] = vaesenConditions[i].img;
+						}
+					}
+					
+					LeftIcons = vaesenConditions.map((Condition, i) => {return {img : ConditionImages[i], description : Condition.system.description, key : Condition.id, click : () => {Condition.update({system : {active : false}})}}});
+					break;
+			}
 						
 			return {left : LeftIcons, right : RightIcons}
 		}
 
 		async getStatBlocks() {
-			const ActiveArmor = this.actor.items.find(Item => Item.type == "armor" && Item.system.isFav); //serach for favoured armor
+			let ActiveArmor;
+			
+			switch (this.actor.type) {
+				case "player" :
+					ActiveArmor = this.actor.items.find(Item => Item.type == "armor" && Item.system.isFav); //serach for favoured armor
+					break;
+				case "npc" :
+				case "vaesen" :
+					ActiveArmor = this.actor.items.find(Item => Item.type == "armor"); //serach for favoured armor
+					break;				
+			}
 
 			const ArmorText = game.i18n.localize("ARMOR.NAME");
 
@@ -101,7 +135,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 							
 							IconImage.setAttribute("src", Icon.img);
 							IconImage.setAttribute("style", "width: 50px;border-width:0px");
-							IconImage.onclick = () => {this.removeCondtion(Icon.key)};
+							IconImage.onclick = () => {Icon.click()};
 							
 							SideIconsBar.appendChild(IconImage);
 						}
@@ -135,8 +169,25 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		get categories() {
-			const attributes = this.actor.system.attribute;
+			const attributes = {...this.actor.system.attribute};
 			const skills = this.actor.system.skill;
+			
+			var allowedattributes = [];
+			
+			switch (this.actor.type) {
+				case "player":
+					allowedattributes = Object.keys(attributes).filter(key => key != "magic");
+					break;
+				default:
+					allowedattributes = Object.keys(attributes);
+					break;
+			}
+			
+			for (let key of Object.keys(attributes)) {
+				if (!allowedattributes.includes(key)) {
+					delete attributes[key];
+				}
+			}
 
 			const attributesButtons = Object.keys(attributes).map((attribute) => {
 				const attributeData = attributes[attribute];
@@ -153,26 +204,30 @@ Hooks.on("argonInit", (CoreHUD) => {
 					}
 				]);
 			});
+			
+			let skillsButtons = [];
+			
+			if (skills) {
+				skillsButtons = Object.keys(skills).map((skill) => {
+					const skillData = skills[skill];
+					return new ARGON.DRAWER.DrawerButton([
+						{
+							label: game.i18n.localize(CONFIG.vaesen.skills[skill]),
+							onClick: () => {this.actor.sheet.rollSkill(skill)}
+						},
+						{
+							label: `${skillData.value}<span style="margin: 0 1rem; filter: brightness(0.8)">(+${attributes[skills[skill].attribute].value})</span>`,
+							onClick: () => {this.actor.sheet.rollSkill(skill)},
+							style: "display: flex; justify-content: flex-end;"
+						},
+					]);
+				});
+			}
 
-			const skillsButtons = Object.keys(skills).map((skill) => {
-				const skillData = skills[skill];
-				return new ARGON.DRAWER.DrawerButton([
-					{
-						label: game.i18n.localize(CONFIG.vaesen.skills[skill]),
-						onClick: () => {this.actor.sheet.rollSkill(skill)}
-					},
-					{
-						label: `${skillData.value}<span style="margin: 0 1rem; filter: brightness(0.8)">(+${attributes[skills[skill].attribute].value})</span>`,
-						onClick: () => {this.actor.sheet.rollSkill(skill)},
-						style: "display: flex; justify-content: flex-end;"
-					},
-				]);
-			});
+			let returncategories = [];
 
-
-
-			return [
-				{
+			if (attributesButtons.length) {
+				returncategories.push({
 					gridCols: "7fr 2fr 2fr",
 					captions: [
 						{
@@ -183,11 +238,14 @@ Hooks.on("argonInit", (CoreHUD) => {
 						},
 						{
 							label: game.i18n.localize("ROLL.ROLL"),
-						}
+						},
 					],
-					buttons: attributesButtons,
-				},
-				{
+					buttons: attributesButtons
+				});
+			}
+			
+			if (skillsButtons.length) {
+				returncategories.push({
 					gridCols: "7fr 2fr",
 					captions: [
 						{
@@ -198,8 +256,10 @@ Hooks.on("argonInit", (CoreHUD) => {
 						}
 					],
 					buttons: skillsButtons,
-				},
-			];
+				});
+			}
+			
+			return returncategories;
 		}
 
 		get title() {
@@ -299,14 +359,41 @@ Hooks.on("argonInit", (CoreHUD) => {
 			var used = false;
 			
 			if (this.item.type == "weapon") {
-				used = true;
+				this.actor.sheet.rollWeapon(this.item.id);
 				
-				this.actor.sheet.rollWeapon(this.item.id)
+				used = true;
+			}
+			
+			if (this.item.type == "attack") {
+				const testName = this.item.name;
+				let bonus = this.actor.sheet.computeInfoFromConditions();
+				let attribute = this.actor.system.attribute[this.item.system.attribute];
+
+				let info = [
+				  { name: game.i18n.localize(attribute.label + "_ROLL"), value: attribute.value },
+				  bonus
+				];
+
+				prepareRollNewDialog(this.actor.sheet, testName, info, this.item.system.damage, null, null);
+				
+				used = true;
 			}
 			
 			if (this.item.type == "gear") {
 				const data = this.item.data;
 				const type = data.type;
+				/*
+				const skill = this.item.system.skill;
+				
+				if (skill instanceof Array) {
+					if (skill.length == 1) {
+						skill = skill[0];
+					}
+					else {
+						skill = undefined;
+					}
+				}
+				*/
 				
 				let chatData = buildChatCard(type, data);
 				ChatMessage.create(chatData, {});;
@@ -418,22 +505,32 @@ Hooks.on("argonInit", (CoreHUD) => {
 	
 	class VaesenWeaponSets extends ARGON.WeaponSets {
 		async getDefaultSets() {
-			const sets = await super.getDefaultSets();
-			if (this.actor.type !== "npc") return sets;
-			const actions = this.actor.items.filter((item) => item.type === "weapon" && item.system.activation?.type === "action");
-			const bonus = this.actor.items.filter((item) => item.type === "weapon" && item.system.activation?.type === "bonus");
+			let attacks;
+
+			switch (this.actor.type) {
+				case "player" :
+					attacks = this.actor.items.filter((item) => item.type === "weapon" && item.system.isFav);
+					break;
+				case "npc" : 
+					attacks = this.actor.items.filter((item) => item.type === "weapon");
+					break;
+				case "vaesen" :
+					attacks = this.actor.items.filter((item) => item.type === "attack");
+					break;					
+			}
+			
 			return {
 				1: {
-					primary: actions[0]?.uuid ?? null,
-					secondary: bonus[0]?.uuid ?? null,
+					primary: attacks[0]?.id ?? null,
+					secondary: null,
 				},
 				2: {
-					primary: actions[1]?.uuid ?? null,
-					secondary: bonus[1]?.uuid ?? null,
+					primary: attacks[1]?.id ?? null,
+					secondary: null,
 				},
 				3: {
-					primary: actions[2]?.uuid ?? null,
-					secondary: bonus[2]?.uuid ?? null,
+					primary: attacks[2]?.id ?? null,
+					secondary: null,
 				},
 			};
 		}
@@ -458,7 +555,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 
 			for (const [set, slots] of Object.entries(sets)) {
 				slots.primary = slots.primary ? await this.actor.items.get(slots.primary) : null;
-				slots.secondary = slots.secondary ? await this.actor.items.get(slots.secondary) : null;
+				slots.secondary = null;
 			}
 			return sets;
 		}
