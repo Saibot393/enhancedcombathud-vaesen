@@ -1,7 +1,7 @@
 # Argon-Vaesen
 An implementation of the [Argon - Combat HUD](https://foundryvtt.com/packages/enhancedcombathud) (by [TheRipper93](https://theripper93.com/) and [Mouse0270](https://github.com/mouse0270)) for the [Vaesen](https://foundryvtt.com/packages/vaesen) system. The Argon Combat HUD (CORE) module is required for this module to work.
 
-![image](https://github.com/Saibot393/enhancedcombathud-vaesen/assets/137942782/affa6722-b518-45ba-bf83-b90a41a46f49)
+![image](https://github.com/Saibot393/enhancedcombathud-vaesen/assets/137942782/9819feb6-4895-4c1f-9b79-be4a030d5265)
 
 <sup>The icons used for the items are from the [Vaesen - Official Core Rulebook](https://foundryvtt.com/packages/vaesen-core) module</sup>
 
