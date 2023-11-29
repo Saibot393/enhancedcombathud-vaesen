@@ -31,6 +31,26 @@
 			"Parry"						: "See Vaesen core rules book p.61",
 			"BreakFree"					: "See Vaesen core rules book p.62",
 			"Chase"						: "See Vaesen core rules book p.62"
+		},
+		
+		"Settings" : {
+			"TreatType" : {
+				"name"					: "Treat injuries type",
+				"descrp"				: "Which type of injuries treatment should be rolled when the action button is clicked"
+			},
+			"ShowTalents" : {
+				"name"					: "Show talents button",
+				"descrp"				: "If a button for talents should be shown"				
+			},
+			"UseDiceCircles" : {
+				"name"					: "Use dice symbols",
+				"descrp"				: "If dice symbols instead of numbers should be used for Skills and Attributes"				
+			}
 		}
-	}
+	},
+	
+    "enhancedcombathud.themeOptions.mainAction" : "Slow Action Colors",
+    "enhancedcombathud.themeOptions.bonusAction" : "Fast Action Colors",
+    "enhancedcombathud.themeOptions.freeAction" : "Not used by Argon Vaesen",
+    "enhancedcombathud.themeOptions.reaction" : "Reaction Colors"
 }

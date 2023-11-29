@@ -49,10 +49,19 @@ function registerVaesenECHSItems () {
 			type : "base",
 			system : {
 				description : game.i18n.localize(ModuleName+".Descriptions.TreatInjuries"),
-				skill : "medicine",
+				skill : "",
 				vaesenattribute : "bodyControl"
 			}
 		}
+	}
+	
+	switch(game.settings.get(ModuleName, "TreatType")) {
+		case "physical" :
+			VaesenECHSlowItems.TreatInjuries.system.skill = "medicine";
+			break;
+		case "mental" :
+			VaesenECHSlowItems.TreatInjuries.system.skill = "inspiration";
+			break;
 	}
 	
 	VaesenECHFastItems = {

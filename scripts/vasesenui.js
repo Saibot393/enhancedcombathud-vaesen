@@ -251,9 +251,29 @@ Hooks.on("argonInit", (CoreHUD) => {
 					delete attributes[key];
 				}
 			}
+			
+			let maxAttribute = Math.max(...Object.values(attributes).map(content => content.value));
 
 			const attributesButtons = Object.keys(attributes).map((attribute) => {
 				const attributeData = attributes[attribute];
+				
+				let valueLabel = attributeData.value;
+				
+				if (game.settings.get(ModuleName, "UseDiceCircles")) {
+					valueLabel = "";
+					
+					valueLabel = valueLabel + `<div style="display:flex">`;
+					
+					valueLabel = valueLabel + "</div>";
+					
+					valueLabel = valueLabel + `<div style="display:flex">`;
+					
+					for (let i = 0; i < attributeData.value; i++) {
+						valueLabel = valueLabel + `<i class="fa-regular fa-circle"></i>`;
+					}
+					
+					valueLabel = valueLabel + "</div>";
+				}
 				
 				return new ARGON.DRAWER.DrawerButton([
 					{
@@ -261,7 +281,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 						onClick: () => {this.actor.sheet.rollAttribute(attribute)}
 					},
 					{
-						label: attributeData.value,
+						label: valueLabel,
 						onClick: () => {this.actor.sheet.rollAttribute(attribute)},
 						style: "display: flex; justify-content: flex-end;"
 					}
@@ -273,13 +293,42 @@ Hooks.on("argonInit", (CoreHUD) => {
 			if (skills) {
 				skillsButtons = Object.keys(skills).map((skill) => {
 					const skillData = skills[skill];
+					
+					let valueLabel = `${skillData.value}<span style="margin: 0 1rem; filter: brightness(0.8)">(+${attributes[skills[skill].attribute].value})</span>`;
+					
+					
+					if (game.settings.get(ModuleName, "UseDiceCircles")) {
+						valueLabel = "";
+						
+						valueLabel = valueLabel + `<div style="display:flex">`;
+						
+						for (let i = 0; i < skillData.value; i++) {
+							valueLabel = valueLabel + `<i class="fa-solid fa-circle"></i>`;
+						}
+						
+						valueLabel = valueLabel + "</div>";
+						
+						valueLabel = valueLabel + `<div style="display:flex">`;
+						
+						for (let i = 0; i < maxAttribute; i++) {
+							if (i < attributes[skills[skill].attribute].value) {
+								valueLabel = valueLabel + `<i class="fa-regular fa-circle"></i>`;
+							}
+							else {
+								valueLabel = valueLabel + `<i class="fa-regular fa-circle" style="visibility:hidden"></i>`;
+							}
+						}
+						
+						valueLabel = valueLabel + "</div>";
+					}
+					
 					return new ARGON.DRAWER.DrawerButton([
 						{
 							label: game.i18n.localize(CONFIG.vaesen.skills[skill]),
 							onClick: () => {this.actor.sheet.rollSkill(skill)}
 						},
 						{
-							label: `${skillData.value}<span style="margin: 0 1rem; filter: brightness(0.8)">(+${attributes[skills[skill].attribute].value})</span>`,
+							label: valueLabel,
 							onClick: () => {this.actor.sheet.rollSkill(skill)},
 							style: "display: flex; justify-content: flex-end;"
 						},
@@ -290,21 +339,37 @@ Hooks.on("argonInit", (CoreHUD) => {
 			let returncategories = [];
 
 			if (attributesButtons.length) {
-				returncategories.push({
-					gridCols: "7fr 2fr 2fr",
-					captions: [
-						{
-							label: game.i18n.localize("HEADER.ATTRIBUTES"),
-						},
-						{
-							label: "", //looks nicer
-						},
-						{
-							label: game.i18n.localize("ROLL.ROLL"),
-						},
-					],
-					buttons: attributesButtons
-				});
+				if (!game.settings.get(ModuleName, "UseDiceCircles")) {
+					returncategories.push({
+						gridCols: "7fr 2fr 2fr",
+						captions: [
+							{
+								label: game.i18n.localize("HEADER.ATTRIBUTES"),
+							},
+							{
+								label: "", //looks nicer
+							},
+							{
+								label: game.i18n.localize("ROLL.ROLL"),
+							},
+						],
+						buttons: attributesButtons
+					});
+				}
+				else {
+					returncategories.push({
+						gridCols: "7fr 2fr",
+						captions: [
+							{
+								label: game.i18n.localize("HEADER.ATTRIBUTES"),
+							},
+							{
+								label: game.i18n.localize("ROLL.ROLL"),
+							},
+						],
+						buttons: attributesButtons
+					});
+				}
 			}
 			
 			if (skillsButtons.length) {
@@ -365,6 +430,11 @@ Hooks.on("argonInit", (CoreHUD) => {
 			}
 			
 			buttons.push(new VaesenButtonPanelButton({type: "gear", color: 0}));
+			
+			if (this.actor.type == "player" && this.actor.items.find(item => item.type == "talent") && game.settings.get(ModuleName, "ShowTalents")) {
+				buttons.push(new VaesenButtonPanelButton({type: "talent", color: 0}));
+			}
+			
 			buttons.push(new ARGON.MAIN.BUTTONS.SplitButton(new VaesenSpecialActionButton(specialActions[2]), new VaesenSpecialActionButton(specialActions[3])));
 			
 			return buttons.filter(button => button.items == undefined || button.items.length);
@@ -466,7 +536,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 				used = true;
 			}
 			
-			if (this.item.type == "gear" || this.item.type == "magic") {
+			if (this.item.type == "gear" || this.item.type == "magic" || this.item.type == "talent") {
 				const data = this.item.data;
 				const type = data.type;
 				/*
@@ -522,6 +592,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 			switch (this.type) {
 				case "gear": return "GEAR.NAME";
 				case "magic": return "MAGIC.NAME";
+				case "talent": return "TALENT.NAME";
 			}
 		}
 
@@ -529,6 +600,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 			switch (this.type) {
 				case "gear": return "modules/enhancedcombathud/icons/svg/backpack.svg";
 				case "magic": return "modules/enhancedcombathud/icons/svg/spell-book.svg";
+				case "talent": return "icons/svg/book.svg";
 			}
 		}
   
@@ -555,6 +627,22 @@ Hooks.on("argonInit", (CoreHUD) => {
 
 		get hasTooltip() {
 			return true;
+		}
+		
+
+		get colorScheme() {
+			switch (this.item?.flags[ModuleName]?.actiontype) {
+				case "slow":
+					return 0;
+					break;
+				case "fast":
+					return 1;
+					break;
+				case "react":
+					return 3;
+					break;
+			}
+			return 0;
 		}
 
 		async getTooltipData() {

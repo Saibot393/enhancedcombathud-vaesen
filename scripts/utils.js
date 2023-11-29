@@ -1,8 +1,8 @@
 const ModuleName = "enhancedcombathud-vaesen";
 
 async function getTooltipDetails(item, actortype) {
-	let title, description, effect, itemType, skill, vaesenattribute, category, subtitle, range, damage, bonus;
-	let propertiesLabel = "GEAR.EFFECT";
+	let title, description, effect, itemType, skill, vaesenattribute, category, subtitle, range, damage, bonus, bonusType;
+	let propertiesLabel;
 	let properties = [];
 	let materialComponents = "";
 
@@ -20,6 +20,11 @@ async function getTooltipDetails(item, actortype) {
 	range = item.system?.range;
 	damage = item.system?.damage;
 	bonus = item.system?.bonus;
+	bonusType = item.system?.bonusType;
+	
+	if (bonusType == "none") {
+		bonusType = undefined;
+	}
 	
 	properties = [];
 	materialComponents = "";
@@ -61,6 +66,7 @@ async function getTooltipDetails(item, actortype) {
 			subtitle = game.i18n.localize("MAGIC." + category.toUpperCase());
 			break;
 		case "gear":
+		case "talent":
 			if (!(skill instanceof Array)) {
 				skill = [skill];
 			}
@@ -79,8 +85,31 @@ async function getTooltipDetails(item, actortype) {
 	}
 	
 	if (effect) {
-		properties.push({ label: effect })
+		propertiesLabel = "GEAR.EFFECT";
+		properties.push({ label: effect });
 	}
+	
+	console.log(item);
+	console.log(bonusType);
+	if (bonusType) {
+		propertiesLabel = "BONUS_TYPE.HEADER";
+		
+		switch (bonusType) {
+			case "ignoreConditionSkill":
+				bonusType = "IGNORE_CONDITIONS_SKILL";
+				break;
+			case "ignoreConditionPhysical":
+				bonusType = "IGNORE_CONDITIONS_PHYSICAL"; 
+				break;
+			case "ignoreConditionMental":
+				bonusType = "IGNORE_CONDITIONS_MENTAL";
+				break;
+		}
+		
+		properties.push({ label: "BONUS_TYPE." + bonusType.toUpperCase() });
+	}
+	
+	console.log(propertiesLabel, properties);
 
 	return { title, description, subtitle, details, properties , propertiesLabel, footerText: materialComponents };
 }

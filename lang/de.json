@@ -31,6 +31,26 @@
 			"Parry"						: "Siehe Vasesen Regelbuch S.61",
 			"BreakFree"					: "Siehe Vasesen Regelbuch S.62",
 			"Chase"						: "Siehe Vasesen Regelbuch S.62"
+		},
+		
+		"Settings" : {
+			"TreatType" : {
+				"name"					: "Behandeln Typ",
+				"descrp"				: "Welche art von Behandlung gewürfelt werden soll, wenn der Aktions Knopf gedrückt wird"
+			},
+			"ShowTalents" : {
+				"name"					: "Zeige Talente Knopf",
+				"descrp"				: "Ob ein Knopf für Talente angezeigt werden soll"				
+			},
+			"UseDiceCircles" : {
+				"name"					: "Nutze Würfel Symbole",
+				"descrp"				: "Ob Würfel Symbole anstatt Zahlen für Attribute und Fertigkeiten angezeigt werden sollen"				
+			}
 		}
-	}
+	},
+	
+    "enhancedcombathud.themeOptions.mainAction" : "Farben langsame Aktion",
+    "enhancedcombathud.themeOptions.bonusAction" : "Farben schnelle Aktion",
+    "enhancedcombathud.themeOptions.freeAction" : "Nicht von Argon Vaesen genutzt",
+    "enhancedcombathud.themeOptions.reaction" : "Farben Reaktion"
 }
