@@ -89,8 +89,6 @@ async function getTooltipDetails(item, actortype) {
 		properties.push({ label: effect });
 	}
 	
-	console.log(item);
-	console.log(bonusType);
 	if (bonusType) {
 		propertiesLabel = "BONUS_TYPE.HEADER";
 		
@@ -108,10 +106,8 @@ async function getTooltipDetails(item, actortype) {
 		
 		properties.push({ label: "BONUS_TYPE." + bonusType.toUpperCase() });
 	}
-	
-	console.log(propertiesLabel, properties);
 
 	return { title, description, subtitle, details, properties , propertiesLabel, footerText: materialComponents };
 }
 
-export { getTooltipDetails }
+export { getTooltipDetails, ModuleName }

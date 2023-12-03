@@ -34,6 +34,14 @@
 		},
 		
 		"Settings" : {
+			"MentalInjurieTable" : {
+				"name"					: "Mental injuries roll tabel",
+				"descrp"				: "The table rolled for mental injuries"
+			},
+			"PhysicalInjurieTable" : {
+				"name"					: "Physical injuries roll tabel",
+				"descrp"				: "The table rolled for physical injuries"
+			},
 			"TreatType" : {
 				"name"					: "Treat injuries type",
 				"descrp"				: "Which type of injuries treatment should be rolled when the action button is clicked"
@@ -45,6 +53,14 @@
 			"UseDiceCircles" : {
 				"name"					: "Use dice symbols",
 				"descrp"				: "If dice symbols instead of numbers should be used for Skills and Attributes"				
+			},
+			"AutoRollInjuries" : {
+				"name"					: "Automatically roll injuries",
+				"descrp"				: "If critical injuries should be rolled automatically when \"broken\" is applied"				
+			},
+			"AutoApplyBroken" : {
+				"name"					: "Automatically apply broken",
+				"descrp"				: "If the broken condition should automatically be applied when all other mental/physical conditions are active"				
 			}
 		}
 	},

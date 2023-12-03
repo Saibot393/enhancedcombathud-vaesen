@@ -1,4 +1,4 @@
-const ModuleName = "enhancedcombathud-vaesen";
+import { ModuleName } from "./utils.js";
 
 const ItemReplacementID = "_argonUI_";
 

@@ -1,9 +1,7 @@
 import {registerVaesenECHSItems, VaesenECHSlowItems, VaesenECHFastItems, VaesenECHReactionItems} from "./specialItems.js";
-import {getTooltipDetails} from "./utils.js";
+import {ModuleName, getTooltipDetails} from "./utils.js";
 import {buildChatCard} from "/systems/vaesen/script/util/chat.js";
 import {prepareRollNewDialog} from "/systems/vaesen/script/util/roll.js";
-
-const ModuleName = "enhancedcombathud-vaesen";
 
 Hooks.on("argonInit", (CoreHUD) => {
     const ARGON = CoreHUD.ARGON;
@@ -16,6 +14,8 @@ Hooks.on("argonInit", (CoreHUD) => {
 
 			Hooks.on("deleteActiveEffect", this.onEffectUpdate.bind(this));
 			Hooks.on("createActiveEffect", this.onEffectUpdate.bind(this));
+			
+			this.wasDead = false;
 		}
 
 		get description() {
@@ -40,18 +40,41 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		get isDead() {
+			let isDead = false;
+			
+			let mental = false;
+			let physical = false;
+			
 			if (this.actor.type == "player") {
-				return this.actor.system.condition.mental?.isBroken || this.actor.system.condition.physical?.isBroken;
+				mental = this.actor.system.condition.mental?.isBroken;
+				physical = this.actor.system.condition.physical?.isBroken;
 			}
 			
 			if (this.actor.type == "npc") {
-				return this.actor.system.condition.mental?.value == 0 || this.actor.system.condition.physical?.value == 0;
+				mental = this.actor.system.condition.mental?.value == 0;
+				physical = this.actor.system.condition.physical?.value == 0;
 			}
 			
-			return false;
+			isDead = mental || physical;
+			
+			if (isDead && !this.wasDead) {
+				if (game.settings.get(ModuleName, "AutoRollInjuries")) {
+					if (mental) {
+						this.rollMental();
+					}
+					
+					if (physical) {
+						this.rollPhysical();
+					}
+				}
+			}
+			
+			this.wasDead = isDead;
+			
+			return isDead;
 		}
 		
-		async getConditionIcons() {
+		async getConditions() {
 			let LeftIcons = [];
 			let RightIcons = [];
 			
@@ -69,6 +92,20 @@ Hooks.on("argonInit", (CoreHUD) => {
 					RightIcons = MentalConditions.map((Condition) => {	const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
 					
 																		return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition, click : () => {this.removeCondtion(Condition)}}});
+																		
+					if (game.settings.get(ModuleName, "AutoApplyBroken")) {
+						if (MentalConditions.length == 3) {
+							if (!this.actor.system.condition.mental.isBroken) {
+								this.actor.createEmbeddedDocuments("ActiveEffect", [CONFIG.vaesen.allConditions.find(condition => condition.id == "mental")]);
+							}
+						}
+						
+						if (PhysicalConditions.length == 3) {
+							if (!this.actor.system.condition.physical.isBroken) {
+								this.actor.createEmbeddedDocuments("ActiveEffect", [CONFIG.vaesen.allConditions.find(condition => condition.id == "physical")]);
+							}
+						}
+					}
 					break;
 				case "vaesen":
 					const vaesenConditions = this.actor.items.filter(item => item.type == "condition" && item.system.active);
@@ -179,7 +216,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 			//this.element.querySelector(".death-save-success").style.visibility = "hidden";
 			//this.element.querySelector(".death-save-fail").style.visibility = "hidden";
 			
-			const ConditionIcons = await this.getConditionIcons();
+			const ConditionIcons = await this.getConditions();
 			
 			if (ConditionIcons) {
 				for (const Side of ["left", "right"]) {
@@ -189,7 +226,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 						const SideIconsBar = document.createElement("div");
 						SideIconsBar.classList.add("status-effects");
 						//top:50%;transform:translateY(-50%)
-						SideIconsBar.setAttribute("style", `position:absolute;${Side}:0;display:flex;flex-direction:column;bot:0`);
+						SideIconsBar.setAttribute("style", `position:absolute;${Side}:0;display:flex;flex-direction:column`);
 						
 						for (const Icon of SideIcons) {
 							const IconImage =  document.createElement("img");
@@ -222,6 +259,20 @@ Hooks.on("argonInit", (CoreHUD) => {
 		async onEffectUpdate(Effect) {
 			if (this.actor == Effect.parent) {
 				this.render();
+			}
+		}
+		
+		async rollMental() {
+			let table = await fromUuid("RollTable." + game.settings.get(ModuleName, "MentalInjurieTable"));
+			if (table) {
+				table.draw({roll: true, displayChat: true});
+			}
+		}
+		
+		async rollPhysical() {
+			let table = await fromUuid("RollTable." + game.settings.get(ModuleName, "PhysicalInjurieTable"));
+			if (table) {
+				table.draw({roll: true, displayChat: true});
 			}
 		}
 	}

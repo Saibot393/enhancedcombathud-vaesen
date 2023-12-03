@@ -34,6 +34,14 @@
 		},
 		
 		"Settings" : {
+			"MentalInjurieTable" : {
+				"name"					: "Mentale Verletzungen Tabelle",
+				"descrp"				: "Die Tabelle auf welche gewürfelt wird wenn eine mentale Verletzung erlitten wird"
+			},
+			"PhysicalInjurieTable" : {
+				"name"					: "Physische Verletzungen Tabelle",
+				"descrp"				: "Die Tabelle auf welche gewürfelt wird wenn eine physische Verletzung erlitten wird"
+			},
 			"TreatType" : {
 				"name"					: "Behandeln Typ",
 				"descrp"				: "Welche art von Behandlung gewürfelt werden soll, wenn der Aktions Knopf gedrückt wird"
@@ -45,6 +53,14 @@
 			"UseDiceCircles" : {
 				"name"					: "Nutze Würfel Symbole",
 				"descrp"				: "Ob Würfel Symbole anstatt Zahlen für Attribute und Fertigkeiten angezeigt werden sollen"				
+			},
+			"AutoRollInjuries" : {
+				"name"					: "Verletzungen automatisch Würfeln",
+				"descrp"				: "Ob kritische Verletzungen automatisch gewürfelt werden sollen, wenn \"Gebrochen\" angewandt wird"				
+			},
+			"AutoApplyBroken" : {
+				"name"					: "Gebrochen automatisch anwenden",
+				"descrp"				: "Ob der \"Gebrochen\" Zustand automatisch hinzugefügt werden soll, wenn alle anderen mentalen/physischen Zustände angewandt wurden"				
 			}
 		}
 	},
