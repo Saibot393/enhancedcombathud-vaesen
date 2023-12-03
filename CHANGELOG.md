@@ -1,3 +1,9 @@
+## v1.2.0
+- Added world setting Mental injuries roll tabel
+- Added world setting Physical injuries roll tabel
+- Added client setting Automatically roll injuries to automatically roll on the appropiate critical injurie table when "broken" is applied
+- Added client setting Automatically apply broken to automatically apply "broken" when all other mental/physical conditions are applied
+
 ## v1.1.0
 - Fixed bug that displayed all buttons, independent of the action type, with the same color scheme
 - Added client setting Treat injuries type to set which type of injurie should be treated with the action button
