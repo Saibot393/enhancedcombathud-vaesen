@@ -1,3 +1,6 @@
+## v1.2.1
+- Removed option that was incompatible with rules (that was a brain fart)
+
 ## v1.2.0
 - Added world setting Mental injuries roll tabel
 - Added world setting Physical injuries roll tabel
