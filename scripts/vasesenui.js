@@ -92,7 +92,8 @@ Hooks.on("argonInit", (CoreHUD) => {
 					RightIcons = MentalConditions.map((Condition) => {	const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
 					
 																		return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition, click : () => {this.removeCondtion(Condition)}}});
-																		
+												
+					/*
 					if (game.settings.get(ModuleName, "AutoApplyBroken")) {
 						if (MentalConditions.length == 3) {
 							if (!this.actor.system.condition.mental.isBroken) {
@@ -106,6 +107,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 							}
 						}
 					}
+					*/
 					break;
 				case "vaesen":
 					const vaesenConditions = this.actor.items.filter(item => item.type == "condition" && item.system.active);

@@ -64,6 +64,7 @@ Hooks.once("init", () => {  // game.settings.get(cModuleName, "")
 	default: false
   });
   
+  /*
   game.settings.register(ModuleName, "AutoApplyBroken", {
 	name: game.i18n.localize(ModuleName+".Settings.AutoApplyBroken.name"),
 	hint: game.i18n.localize(ModuleName+".Settings.AutoApplyBroken.descrp"),
@@ -72,5 +73,5 @@ Hooks.once("init", () => {  // game.settings.get(cModuleName, "")
 	type: Boolean,
 	default: false
   });
-  
+  */
 });
