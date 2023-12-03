@@ -36,11 +36,11 @@
 		"Settings" : {
 			"MentalInjurieTable" : {
 				"name"					: "Mentale Verletzungen Tabelle",
-				"descrp"				: "Die Tabelle auf welche gewürfelt wird wenn eine mentale Verletzung erlitten wird"
+				"descrp"				: "Die Tabelle auf welche gewürfelt wird wenn eine mentale Verletzung erlitten wird (ID der Tabelle)"
 			},
 			"PhysicalInjurieTable" : {
 				"name"					: "Physische Verletzungen Tabelle",
-				"descrp"				: "Die Tabelle auf welche gewürfelt wird wenn eine physische Verletzung erlitten wird"
+				"descrp"				: "Die Tabelle auf welche gewürfelt wird wenn eine physische Verletzung erlitten wird (ID der Tabelle)"
 			},
 			"TreatType" : {
 				"name"					: "Behandeln Typ",
