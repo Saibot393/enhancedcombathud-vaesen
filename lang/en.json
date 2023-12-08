@@ -35,11 +35,11 @@
 		
 		"Settings" : {
 			"MentalInjurieTable" : {
-				"name"					: "Mental injuries roll tabel",
+				"name"					: "Mental injuries roll table",
 				"descrp"				: "The table rolled for mental injuries (ID of table)"
 			},
 			"PhysicalInjurieTable" : {
-				"name"					: "Physical injuries roll tabel",
+				"name"					: "Physical injuries roll table",
 				"descrp"				: "The table rolled for physical injuries (ID of table)"
 			},
 			"TreatType" : {

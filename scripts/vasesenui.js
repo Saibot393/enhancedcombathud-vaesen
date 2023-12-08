@@ -1,5 +1,5 @@
 import {registerVaesenECHSItems, VaesenECHSlowItems, VaesenECHFastItems, VaesenECHReactionItems} from "./specialItems.js";
-import {ModuleName, getTooltipDetails} from "./utils.js";
+import {ModuleName, getTooltipDetails, rollArmor, innerHTMLselector} from "./utils.js";
 import {buildChatCard} from "/systems/vaesen/script/util/chat.js";
 import {prepareRollNewDialog} from "/systems/vaesen/script/util/roll.js";
 
@@ -16,6 +16,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 			Hooks.on("createActiveEffect", this.onEffectUpdate.bind(this));
 			
 			this.wasDead = false;
+			this.activeArmor = null;
 		}
 
 		get description() {
@@ -138,15 +139,13 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 
 		async getStatBlocks() {
-			let ActiveArmor;
-			
 			switch (this.actor.type) {
 				case "player" :
-					ActiveArmor = this.actor.items.find(Item => Item.type == "armor" && Item.system.isFav); //serach for favoured armor
+					this.activeArmor = this.actor.items.find(Item => Item.type == "armor" && Item.system.isFav); //serach for favoured armor
 					break;
 				case "npc" :
 				case "vaesen" :
-					ActiveArmor = this.actor.items.find(Item => Item.type == "armor"); //serach for favoured armor
+					this.activeArmor = this.actor.items.find(Item => Item.type == "armor"); //serach for favoured armor
 					break;				
 			}
 
@@ -180,13 +179,13 @@ Hooks.on("argonInit", (CoreHUD) => {
 				]);				
 			}
 			
-			if (ActiveArmor) {
+			if (this.activeArmor) {
 				Blocks.push([
 					{
 						text: ArmorText,
 					},
 					{
-						text: ActiveArmor.system.protection,
+						text: this.activeArmor.system.protection,
 						color: "var(--ech-movement-baseMovement-background)",
 					},
 				]);
@@ -215,8 +214,11 @@ Hooks.on("argonInit", (CoreHUD) => {
 		async _renderInner(data) {
 			await super._renderInner(data);
 			
-			//this.element.querySelector(".death-save-success").style.visibility = "hidden";
-			//this.element.querySelector(".death-save-fail").style.visibility = "hidden";
+			const armorBlock = innerHTMLselector(this.element, "span", game.i18n.localize("ARMOR.NAME"))?.parentElement;
+
+			if (armorBlock) {
+				armorBlock.onclick = () => {rollArmor(this.activeArmor)};
+			}
 			
 			const ConditionIcons = await this.getConditions();
 			

@@ -1,3 +1,5 @@
+import { prepareRollNewDialog } from "/systems/vaesen/script/util/roll.js";
+
 const ModuleName = "enhancedcombathud-vaesen";
 
 async function getTooltipDetails(item, actortype) {
@@ -110,4 +112,21 @@ async function getTooltipDetails(item, actortype) {
 	return { title, description, subtitle, details, properties , propertiesLabel, footerText: materialComponents };
 }
 
-export { getTooltipDetails, ModuleName }
+function rollArmor(armorItem) {
+    const item = armorItem;
+    const testName = item.name;
+
+    let info = [{ name: testName, value: item.system.protection }];
+
+	prepareRollNewDialog(armorItem.parent.sheet, testName, info);
+}
+
+function innerHTMLselector(html, selector, innerHTML) {
+	let returnElement;
+	
+	html.querySelectorAll(selector).forEach((element) => {if (element.innerHTML == innerHTML) returnElement = element});
+	
+	return returnElement;
+}
+
+export { getTooltipDetails, ModuleName, rollArmor, innerHTMLselector }

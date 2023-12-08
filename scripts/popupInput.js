@@ -1,13 +1,13 @@
-ModuleName = ""
+import {ModuleName} from "./utils.js";
 
-function openNewInput(type, title, question, options = {}, callback, argonstyle = false) {
+async function openNewInput(type, title, question, options = {}, argonstyle = false) {
 	let content = `<label>${question}</label>`;
 	
 	switch (type) {
 		case "number" :
 		case "text" :
 			content = content + `
-				<input type="${type}" id="inputresult">
+				<input type="${type}" id="inputresult" ${options.defaultValue != undefined ? "value="+options.defaultValue : ""}>
 			`;
 			break;
 		case "choice" :
@@ -22,14 +22,19 @@ function openNewInput(type, title, question, options = {}, callback, argonstyle 
 			break;
 	}
 	
+	let inputready = false;
+	let inputresult = undefined;
+	
 	let internalcallback = (html) => {
 		switch (type) {
 			case "number" :
 			case "text" :
-				callback(html.find("input#inputresult").val());
+				inputresult = html.find("input#inputresult").val();
+				inputready = true;
 				break;
 			case "choice" :
-				callback(html.find("select#inputresult").val());
+				inputresult = html.find("select#inputresult").val();
+				inputready = true;
 				break;
 		}
 	};
@@ -54,7 +59,7 @@ function openNewInput(type, title, question, options = {}, callback, argonstyle 
 	
 	if (argonstyle) {
 		const hookId = Hooks.once("renderDialog", (dialog, html) => { 
-			html.classList.add("ech-highjack-window");
+			$(html).classList.add("ech-highjack-window");
 		});
 	  
 		setTimeout(() => {
@@ -63,4 +68,14 @@ function openNewInput(type, title, question, options = {}, callback, argonstyle 
 	}
 	
 	dialog.render(true);
+	
+	const timeout = async ms => new Promise(res => setTimeout(res, ms));
+	
+	await timeout(50); //give window time to render
+	
+	while (inputready === false && dialog?.rendered) await timeout(50);
+	
+	return inputresult;
 }
+
+export { openNewInput };
