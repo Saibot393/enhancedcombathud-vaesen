@@ -84,15 +84,21 @@ Hooks.on("argonInit", (CoreHUD) => {
 					const playerConditions = this.actor.system.condition;
 					
 					const PhysicalConditions = Object.keys(playerConditions.physical.states).filter(Key => playerConditions.physical.states[Key].isChecked);
+					if (playerConditions.physical.isBroken) {
+						PhysicalConditions.push("physical");
+					}
 					const MentalConditions = Object.keys(playerConditions.mental.states).filter(Key => playerConditions.mental.states[Key].isChecked);
+					if (playerConditions.mental.isBroken) {
+						MentalConditions.push("mental");
+					}
 			
 					LeftIcons = PhysicalConditions.map((Condition) => {	const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
 					
-																		return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition, click : () => {this.removeCondtion(Condition)}}});
+																		return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition, lclick : () => {this.removeCondtion(Condition)}, large : Condition == "physical"}});
 																			
 					RightIcons = MentalConditions.map((Condition) => {	const ConditionInfo = CONFIG.vaesen.allConditions.find(ConditionInfo => ConditionInfo.id == Condition);
 					
-																		return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition, click : () => {this.removeCondtion(Condition)}}});
+																		return {img : ConditionInfo.icon, description : ConditionInfo.label, key : Condition, lclick : () => {this.removeCondtion(Condition)}, large : Condition == "mental"}});
 												
 					/*
 					if (game.settings.get(ModuleName, "AutoApplyBroken")) {
@@ -126,10 +132,14 @@ Hooks.on("argonInit", (CoreHUD) => {
 					
 					LeftIcons = vaesenConditions.map((Condition, i) => {return {
 						img : ConditionImages[i], 
-						description : Condition.name, 
+						description : Condition.name + " (" + (Condition.system.bonus>0 ? "+" : "") + Condition.system.bonus + ")", 
 						key : Condition.id, 
-						click : async () => {
-							await this.actor.items.filter(item => item.type == "condition").reverse().find(item => item.system.active)?.update({system : {active : false}});
+						lclick : async () => {
+							await this.changeCondition(-1)
+							this.render()
+						},
+						rclick : async () => {
+							await this.changeCondition(+1)
 							this.render()
 						}}});
 					break;
@@ -224,6 +234,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 			
 			if (ConditionIcons) {
 				for (const Side of ["left", "right"]) {
+					const otherSide = ["left", "right"].find(word => word != Side);
 					const SideIcons = ConditionIcons[Side];
 					
 					if (SideIcons) {
@@ -237,8 +248,9 @@ Hooks.on("argonInit", (CoreHUD) => {
 							IconImage.classList.add("effect-control");
 							
 							IconImage.setAttribute("src", Icon.img);
-							IconImage.setAttribute("style", "width: 50px;border-width:0px");
-							IconImage.onclick = () => {Icon.click()};
+							IconImage.setAttribute("style", `width: ${Icon.large ? 75 : 50}px;border-width:0px;margin-${Side}:0;margin;margin-${otherSide}:auto`);
+							IconImage.onclick = () => {Icon.lclick()};
+							IconImage.oncontextmenu = () => {if (Icon.rclick) Icon.rclick()}
 							IconImage.setAttribute("data-tooltip", Icon.description);
 							
 							SideIconsBar.appendChild(IconImage);
@@ -253,10 +265,62 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 		
 		async removeCondtion(ConditionKey) {
-			const currentEffect = this.actor.effects.find(Effect => Effect.name == ConditionKey.toUpperCase());
+			const currentEffect = this.actor.effects.find(Effect => Effect.statuses.has(ConditionKey));
 			
 			if (currentEffect) {
 				this.actor.deleteEmbeddedDocuments('ActiveEffect', [currentEffect.id]);
+			}
+		}
+		
+		async changeCondition(change, type = "") {
+			switch(this.actor.type) {
+				case "player":
+					const conditions = this.actor.system.condition[type];
+					
+					if (conditions) {
+						let toggleKey;
+						let setresult;
+						
+						if (change > 0) {
+							toggleKey = Object.keys(conditions.states).find(key => !conditions.states[key].isChecked);
+							setresult = true;
+						}
+						
+						if (change < 0) {
+							if (!conditions.isBroken) {
+								toggleKey = Object.keys(conditions.states).reverse().find(key => conditions.states[key].isChecked);
+							}
+							setresult = false;
+						}
+						
+						if (toggleKey) {
+							await this.actor.update({system : {condition : {[type] : {states : {[toggleKey] : {isChecked : setresult}}}}}});
+						}
+						else {
+							await this.actor.update({system : {condition : {[type] : {isBroken : setresult}}}});
+						}
+					}
+					break;
+				case "vaesen":
+					const conditionitems = this.actor.items.filter(item => item.type == "condition");
+					
+					let tochange;
+					let setresult;
+
+					if (change > 0) {
+						tochange = conditionitems.find(condition => !condition.system.active);
+						setresult = true;
+					}
+					
+					if (change < 0) {
+						tochange = conditionitems.reverse().find(condition => condition.system.active);
+						setresult = false;
+					}
+					
+					if (tochange) {
+						await tochange.update({system : {active : setresult}});
+					}
+					break;
 			}
 		}
 		
