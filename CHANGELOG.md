@@ -1,3 +1,6 @@
+## v1.3.1
+- Small ui fix for compatibility with Argon Core v2.4.0
+
 ## v1.3.0
 - The armor indicator on the portrait can now be clicked to roll for armor
 - The physical and mental broken condtions will be displayed a slightly larger icons on the player portraits
