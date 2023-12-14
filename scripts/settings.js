@@ -1,8 +1,16 @@
 import { ModuleName } from "./utils.js";
+import { fixXPoptionSetting, XPOptionsSettingWindows } from "./levelup.js";
 
 Hooks.once("init", () => {  // game.settings.get(cModuleName, "")
   //Settings
-  //client
+  //world
+  game.settings.register(ModuleName, "XPoptions", {
+	scope: "world",
+	config: false,
+	type: Object,
+	default: {}
+  });
+  
   game.settings.register(ModuleName, "MentalInjurieTable", {
 	name: game.i18n.localize(ModuleName+".Settings.MentalInjurieTable.name"),
 	hint: game.i18n.localize(ModuleName+".Settings.MentalInjurieTable.descrp"),
@@ -21,6 +29,7 @@ Hooks.once("init", () => {  // game.settings.get(cModuleName, "")
 	default: "D4QOf1Mj4NL2ke7C"
   });
   
+  //client
   game.settings.register(ModuleName, "TreatType", {
 	name: game.i18n.localize(ModuleName+".Settings.TreatType.name"),
 	hint: game.i18n.localize(ModuleName+".Settings.TreatType.descrp"),
@@ -75,3 +84,13 @@ Hooks.once("init", () => {  // game.settings.get(cModuleName, "")
   });
   */
 });
+
+Hooks.once("ready", () => {
+	fixXPoptionSetting("XPoptions");
+});
+
+//Hooks
+Hooks.on("renderSettingsConfig", (pApp, pHTML, pData) => {
+	pHTML.find(`div.form-group[data-setting-id="${ModuleName}.PhysicalInjurieTable"]`).after(`<button name="openXPoptionsmenu"> ${game.i18n.localize(ModuleName + ".Titles.openXPoptionsmenu")}</button>`)
+	pHTML.find(`button[name="openXPoptionsmenu"]`).on("click", () => {new XPOptionsSettingWindow("XPoptions").render(true);});
+});  
