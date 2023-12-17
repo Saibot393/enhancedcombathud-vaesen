@@ -2,6 +2,7 @@ import {registerVaesenECHSItems, VaesenECHSlowItems, VaesenECHFastItems, VaesenE
 import {ModuleName, getTooltipDetails, rollArmor, innerHTMLselector} from "./utils.js";
 import {buildChatCard} from "/systems/vaesen/script/util/chat.js";
 import {prepareRollNewDialog} from "/systems/vaesen/script/util/roll.js";
+import {gainXPWindow} from "./levelup.js";
 
 Hooks.on("argonInit", (CoreHUD) => {
     const ARGON = CoreHUD.ARGON;
@@ -221,6 +222,22 @@ Hooks.on("argonInit", (CoreHUD) => {
 			return Blocks;
 		}
 		
+		async getLevelUPIcon() {
+			if (this.actor?.getFlag(ModuleName, "levelup")) {
+				let levelupicon = document.createElement("div");
+				
+				levelupicon.style.backgroundImage = `url("modules/${ModuleName}/icons/upgrade.svg")`;
+				levelupicon.style.width = "50px";
+				levelupicon.style.height = "50px";
+				
+				levelupicon.onclick = () => {new gainXPWindow(this.actor, XPoptions).render(true)}
+				
+				return levelupicon;
+			}
+			
+			return;
+		}
+		
 		async _renderInner(data) {
 			await super._renderInner(data);
 			
@@ -248,7 +265,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 							IconImage.classList.add("effect-control");
 							
 							IconImage.setAttribute("src", Icon.img);
-							IconImage.setAttribute("style", `width: ${Icon.large ? 75 : 50}px;border-width:0px;margin-${Side}:0;margin;margin-${otherSide}:auto`);
+							IconImage.setAttribute("style", `width: ${Icon.large ? 75 : 50}px;border-width:0px;margin-${Side}:0;margin-${otherSide}:auto`);
 							IconImage.onclick = () => {Icon.lclick()};
 							IconImage.oncontextmenu = () => {if (Icon.rclick) Icon.rclick()}
 							IconImage.setAttribute("data-tooltip", Icon.description);
@@ -262,6 +279,20 @@ Hooks.on("argonInit", (CoreHUD) => {
 			}
 			
 			this.element.querySelector(".player-buttons").style.right = "0%";
+			
+			let levelupicon = await this.getLevelUPIcon();
+			
+			if (levelupicon) {
+				const CornerIcons = document.createElement("div");
+				
+				levelupicon.style.position = "absolute";
+				levelupicon.style.right = "0";
+				levelupicon.style.top = "0";
+				levelupicon.style.zIndex = 100;
+				
+				CornerIcons.appendChild(levelupicon);
+				this.element.appendChild(CornerIcons);
+			}
 		}
 		
 		async removeCondtion(ConditionKey) {

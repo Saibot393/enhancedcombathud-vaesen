@@ -1,5 +1,5 @@
 import { ModuleName } from "./utils.js";
-import { fixXPoptionSetting, XPOptionsSettingWindows } from "./levelup.js";
+import { fixXPoptionSetting, XPOptionsSettingWindow } from "./levelup.js";
 
 Hooks.once("init", () => {  // game.settings.get(cModuleName, "")
   //Settings

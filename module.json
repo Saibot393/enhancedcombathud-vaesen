@@ -32,7 +32,8 @@
   ],
   "esmodules": [
 	"scripts/settings.js",
-	"scripts/vasesenui.js"
+	"scripts/vasesenui.js",
+	"scripts/levelup.js"
   ],
   "relationships": {
 	"requires": [

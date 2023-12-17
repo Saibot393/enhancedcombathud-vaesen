@@ -183,7 +183,9 @@ class gainXPWindow extends Application {
 			}
 		});
 		
-		this.actor.update({system : {exp : {this.actor.system.exp + gainedXP}}})
+		let targetvalue = this.actor.system.exp + gainedXP;
+		
+		this.actor.update({system : {exp : targetvalue}})
 	}
 }
 
@@ -215,5 +217,38 @@ function fixXPoptionSetting(setting) {
 	
 	game.settings.set(ModuleName, setting, options);
 }
+
+//ui
+function addBuilderButton(app, html, infos) {
+	if (game.user.isGM) {
+		const xpbutton = document.createElement("li");
+		xpbutton.classList.add("control-tool");
+		xpbutton.setAttribute("data-tool", "levelup");
+		xpbutton.setAttribute("data-tooltip", game.i18n.localize(ModuleName+".Titles.LevelUP"));
+		
+		const icon = document.createElement("i");
+		icon.classList.add("fa-solid", "fa-arrow-up");
+		
+		xpbutton.appendChild(icon);
+		
+		xpbutton.onclick = () => {game.socket.emit("module." + ModuleName, {functionname : "levelup", data : {}});}
+
+		ui.controls.element[0].querySelector('[id="tools-panel-token"]').lastElementChild.after(xpbutton);
+	}
+}
+
+Hooks.once("ready", () => {
+	game.socket.on("module." + ModuleName, async ({functionname, data} = {}) => {
+		switch(functionname) {
+			case "levelup": 
+				await game.user.character.setFlag(ModuleName, "levelup", true);
+				
+				ui.ARGON?.render();
+				break;
+		}
+	});
+});
+
+Hooks.on("renderSceneControls", (app, html, infos) => {addBuilderButton(app, html, infos);});
 
 export {fixXPoptionSetting, XPOptionsSettingWindow, gainXPWindow};
