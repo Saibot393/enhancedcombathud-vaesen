@@ -11,9 +11,9 @@ Hooks.once("init", () => {  // game.settings.get(cModuleName, "")
 	default: {}
   });
   
-  game.settings.register(ModuleName, "ShowLevelUpButton", {
-	name: game.i18n.localize(ModuleName+".Settings.ShowLevelUpButton.name"),
-	hint: game.i18n.localize(ModuleName+".Settings.ShowLevelUpButton.descrp"),
+  game.settings.register(ModuleName, "useXPautomation", {
+	name: game.i18n.localize(ModuleName+".Settings.useXPautomation.name"),
+	hint: game.i18n.localize(ModuleName+".Settings.useXPautomation.descrp"),
 	scope: "world",
 	config: true,
 	type: Boolean,
@@ -101,6 +101,6 @@ Hooks.once("ready", () => {
 
 //Hooks
 Hooks.on("renderSettingsConfig", (pApp, pHTML, pData) => {
-	pHTML.find(`div.form-group[data-setting-id="${ModuleName}.ShowLevelUpButton"]`).after(`<button name="openXPoptionsmenu"> ${game.i18n.localize(ModuleName + ".Titles.openXPoptionsmenu")}</button>`)
+	pHTML.find(`div.form-group[data-setting-id="${ModuleName}.useXPautomation"]`).after(`<button name="openXPoptionsmenu"> ${game.i18n.localize(ModuleName + ".Titles.openXPoptionsmenu")}</button>`)
 	pHTML.find(`button[name="openXPoptionsmenu"]`).on("click", () => {new XPOptionsSettingWindow().render(true);});
 });  

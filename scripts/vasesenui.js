@@ -223,7 +223,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 		
 		async getLevelUPIcon() {
-			if (this.actor?.getFlag(ModuleName, "levelup")) {
+			if (this.actor?.getFlag(ModuleName, "levelup") && game.settings.get(ModuleName, "useXPautomation")) {
 				let levelupicon = document.createElement("div");
 				
 				levelupicon.style.backgroundImage = `url("modules/${ModuleName}/icons/upgrade.svg")`;
@@ -280,6 +280,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 			}
 			
 			this.element.querySelector(".player-buttons").style.right = "0%";
+			
 			
 			const CornerIcons = document.createElement("div");
 			CornerIcons.style.position = "absolute";

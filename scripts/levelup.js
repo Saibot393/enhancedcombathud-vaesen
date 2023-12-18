@@ -24,7 +24,7 @@ class XPOptionsSettingWindow extends Application {
 			height: 400,
 			template: `modules/${ModuleName}/templates/defaultwindow.html`,
 			jQuery: true,
-			title: game.i18n.localize(ModuleName + ".Titles." + "VisionChannels"),
+			title: game.i18n.localize(ModuleName + ".Titles." + "XPOptions"),
 			resizable: true
 		});
 	}
@@ -39,7 +39,7 @@ class XPOptionsSettingWindow extends Application {
 		let vEntriesHTML = `<table name = "XPentries">`;
 		
 		vEntriesHTML = vEntriesHTML + 	`<tr name="header" style="border: 1px solid #dddddd">
-											<th style="border: 1px solid #dddddd">${game.i18n.localize(ModuleName + ".Titles.XPOption")}</th>
+											<th style="border: 1px solid #dddddd">${game.i18n.localize(ModuleName + ".Titles.XPOptions")}</th>
 											<th style="border: 1px solid #dddddd"></th>
 										</tr>`;
 		
@@ -137,7 +137,7 @@ class gainXPWindow extends Application {
 			height: 400,
 			template: `modules/${ModuleName}/templates/defaultwindow.html`,
 			jQuery: true,
-			title: game.i18n.localize(ModuleName + ".Titles." + "VisionChannels"),
+			title: game.i18n.localize(ModuleName + ".Titles." + "CharacterAdvancement"),
 			resizable: true
 		});
 	}
@@ -214,7 +214,7 @@ function valueofInput(input) {
 
 function fixXPoptionSetting(setting) {
 	defaultXPChoice = {
-		Name : game.i18n.localize(ModuleName + ".Titles.XPOption")
+		Name : game.i18n.localize(ModuleName + ".Titles.defaultXPOption.name")
 	}
 
 	let options = game.settings.get(ModuleName, setting);
@@ -260,7 +260,7 @@ Hooks.once("ready", () => {
 });
 
 Hooks.on("renderSceneControls", (app, html, infos) => {
-	if (game.settings.get(ModuleName, "ShowLevelUpButton")) {
+	if (game.settings.get(ModuleName, "useXPautomation")) {
 		addBuilderButton(app, html, infos);
 	}
 });

@@ -15,7 +15,20 @@
 			"Dodge"						: "Ausweichen",
 			"Parry"						: "Parieren",
 			"BreakFree"					: "Losreißen",
-			"Chase"						: "Verfolgen"
+			"Chase"						: "Verfolgen",
+			
+			"LevelUP"					: "Löse Charakterverbesserung aus",
+			"openXPoptionsmenu"			: "Erfahrungsoptionen anpassen",
+			"XPOptions"					: "Erfahrungsoptionen",
+			"defaultXPOption" : {
+				"name"					: "Neue Erfahrungsoption"
+			},
+			"addXPOption"				: "Füge neue Erfahrungsoption hinzu",
+			"confirmChanges"			: "Bestätigen und speichern",
+			"OpenXPMenu"				: "Öffne Charakterverbesserungs Menü",
+			"CharacterAdvancement"		: "Charakterverbesserungs",
+			"CheckWhichApplies"			: "Kreuze alle Fragen an welche du mit \"ja\" beantworten kannst:",
+			"confirmXP"					: "Bestätigen"
 		},
 		
 		"Descriptions" : {
@@ -34,6 +47,10 @@
 		},
 		
 		"Settings" : {
+			"useXPautomation" : {
+				"name"					: "Nutze Erfahrungs Automatisierung",
+				"descrp"				: "Ob ein Knopf in der Kontrollleiste angezeigt werden soll um die automatische Charakterverbesserung für Spieler aus zu lösen"
+			},
 			"MentalInjurieTable" : {
 				"name"					: "Mentale Verletzungen Tabelle",
 				"descrp"				: "Die Tabelle auf welche gewürfelt wird wenn eine mentale Verletzung erlitten wird (ID der Tabelle)"
