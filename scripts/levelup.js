@@ -4,13 +4,15 @@ const ConfirmIcon = "fa-solid fa-check";
 const AddIcon = "fa-solid fa-plus";
 const DeleteIcon = "fa-solid fa-trash";
 
+const XPoptionsSetting = "XPoptions";
+
 var defaultXPChoice = {};
 
 class XPOptionsSettingWindow extends Application {
-	constructor(optionssetting, Options = {}) {
+	constructor(Options = {}) {
 		super(Options);
 		
-		this.optionssetting = optionssetting;
+		this.optionssetting = XPoptionsSetting;
 		
 		this.XPOptions = game.settings.get(ModuleName, this.optionssetting);
 	}
@@ -62,8 +64,9 @@ class XPOptionsSettingWindow extends Application {
 	activateListeners(HTML) {
 		const AddButton = HTML.find(`button[name="addXPOption"]`);
 		
-		AddButton.on("click", () => {	this.XPOptions[randomID()] = {...defaultXPChoice};
-										this.render();});
+		AddButton.on("click", async () => {	await this.updateXPchoices();
+											this.XPOptions[randomID()] = {...defaultXPChoice};
+											this.render();});
 											
 		const channelEntries = HTML.find(`tr`);
 		
@@ -80,7 +83,7 @@ class XPOptionsSettingWindow extends Application {
 											this.close()});
 	}
 	
-	saveXPChoices() {
+	async updateXPchoices() {
 		let HTML = this.element;
 		
 		let XPoptions = {};
@@ -103,16 +106,22 @@ class XPOptionsSettingWindow extends Application {
 			}
 		});
 		
-		game.settings.set(ModuleName, this.optionssetting, XPoptions);
+		this.XPOptions = XPoptions;
+	}
+	
+	async saveXPChoices() {
+		await this.updateXPchoices();
+		
+		game.settings.set(ModuleName, this.optionssetting, this.XPOptions);
 	}
 }
 
 class gainXPWindow extends Application {
-	constructor(actor, optionssetting, Options = {}) {
+	constructor(actor, Options = {}) {
 		super(Options);
 		
 		this.actor = actor;
-		this.optionssetting = optionssetting;
+		this.optionssetting = XPoptionsSetting;
 		
 		this.XPOptions = game.settings.get(ModuleName, this.optionssetting);
 		
@@ -140,12 +149,12 @@ class gainXPWindow extends Application {
 	}
 	
 	async getHTML(pOptions={}) {
-		let vEntriesHTML = ``;
+		let vEntriesHTML = `<span>${game.i18n.localize(ModuleName + ".Titles.CheckWhichApplies")}</span>`;
 		
 		for (const key of Object.keys(this.XPOptions)) {
 			vEntriesHTML = vEntriesHTML + 	`<div class="XPoption" name="${key}">
 												<input type="checkbox" id="${key}">
-												<span>${this.XPOptions[key].Name}</span>
+												<label for="${key}">${this.XPOptions[key].Name}</label>
 											</div>`;
 		}
 		
@@ -158,13 +167,13 @@ class gainXPWindow extends Application {
 	}
 	
 	activateListeners(HTML) {
-		const confirmButton = HTML.find(`button[name="confirmChanges"]`);
+		const confirmButton = HTML.find(`button[name="confirmXP"]`);
 		
 		confirmButton.on("click", () => {	this.applyXP();
 											this.close()});
 	}
 	
-	applyXP() {
+	async applyXP() {
 		let HTML = this.element;
 		
 		let gainedXP = 0;
@@ -177,27 +186,30 @@ class gainXPWindow extends Application {
 			let id = $(element).attr("name");
 			
 			if (id != "header") {
-				if (valueofInput(element.find(`input[type="checkbox"]`))) {
+				if (valueofInput($(element).find(`input[type="checkbox"]`))) {
 					gainedXP = gainedXP + 1;
 				}
 			}
 		});
 		
-		let targetvalue = this.actor.system.exp + gainedXP;
+		let targetvalue = this.actor.system.experience + gainedXP;
 		
-		this.actor.update({system : {exp : targetvalue}})
+		await this.actor.update({system : {experience : targetvalue}});
+		this.actor.setFlag(ModuleName, "levelup", false);
 	}
 }
 
 function valueofInput(input) {
-	switch (input.prop("type")) {
-		case "checkbox":
-			return input.prop("checked");
-			break;
-		default:
-			return input.val();
-			break;
-	}		
+	if (input) {
+		switch (input.prop("type")) {
+			case "checkbox":
+				return input.prop("checked");
+				break;
+			default:
+				return input.val();
+				break;
+		}
+	}
 } 
 
 function fixXPoptionSetting(setting) {
@@ -241,14 +253,16 @@ Hooks.once("ready", () => {
 	game.socket.on("module." + ModuleName, async ({functionname, data} = {}) => {
 		switch(functionname) {
 			case "levelup": 
-				await game.user.character.setFlag(ModuleName, "levelup", true);
-				
-				ui.ARGON?.render();
+				game.user.character.setFlag(ModuleName, "levelup", true);
 				break;
 		}
 	});
 });
 
-Hooks.on("renderSceneControls", (app, html, infos) => {addBuilderButton(app, html, infos);});
+Hooks.on("renderSceneControls", (app, html, infos) => {
+	if (game.settings.get(ModuleName, "ShowLevelUpButton")) {
+		addBuilderButton(app, html, infos);
+	}
+});
 
 export {fixXPoptionSetting, XPOptionsSettingWindow, gainXPWindow};

@@ -227,10 +227,11 @@ Hooks.on("argonInit", (CoreHUD) => {
 				let levelupicon = document.createElement("div");
 				
 				levelupicon.style.backgroundImage = `url("modules/${ModuleName}/icons/upgrade.svg")`;
-				levelupicon.style.width = "50px";
-				levelupicon.style.height = "50px";
+				levelupicon.style.width = "30px";
+				levelupicon.style.height = "30px";
+				levelupicon.setAttribute("data-tooltip", game.i18n.localize(ModuleName + ".Titles.OpenXPMenu"));
 				
-				levelupicon.onclick = () => {new gainXPWindow(this.actor, XPoptions).render(true)}
+				levelupicon.onclick = () => {new gainXPWindow(this.actor).render(true)}
 				
 				return levelupicon;
 			}
@@ -280,19 +281,17 @@ Hooks.on("argonInit", (CoreHUD) => {
 			
 			this.element.querySelector(".player-buttons").style.right = "0%";
 			
+			const CornerIcons = document.createElement("div");
+			CornerIcons.style.position = "absolute";
+			CornerIcons.style.right = "0";
+			CornerIcons.style.top = "0";
+			CornerIcons.style.zIndex = 100;
 			let levelupicon = await this.getLevelUPIcon();
 			
 			if (levelupicon) {
-				const CornerIcons = document.createElement("div");
-				
-				levelupicon.style.position = "absolute";
-				levelupicon.style.right = "0";
-				levelupicon.style.top = "0";
-				levelupicon.style.zIndex = 100;
-				
 				CornerIcons.appendChild(levelupicon);
-				this.element.appendChild(CornerIcons);
 			}
+			this.element.appendChild(CornerIcons);
 		}
 		
 		async removeCondtion(ConditionKey) {

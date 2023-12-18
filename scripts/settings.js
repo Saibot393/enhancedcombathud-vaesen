@@ -11,6 +11,16 @@ Hooks.once("init", () => {  // game.settings.get(cModuleName, "")
 	default: {}
   });
   
+  game.settings.register(ModuleName, "ShowLevelUpButton", {
+	name: game.i18n.localize(ModuleName+".Settings.ShowLevelUpButton.name"),
+	hint: game.i18n.localize(ModuleName+".Settings.ShowLevelUpButton.descrp"),
+	scope: "world",
+	config: true,
+	type: Boolean,
+	default: true,
+	requiresReload: true
+  });
+  
   game.settings.register(ModuleName, "MentalInjurieTable", {
 	name: game.i18n.localize(ModuleName+".Settings.MentalInjurieTable.name"),
 	hint: game.i18n.localize(ModuleName+".Settings.MentalInjurieTable.descrp"),
@@ -91,6 +101,6 @@ Hooks.once("ready", () => {
 
 //Hooks
 Hooks.on("renderSettingsConfig", (pApp, pHTML, pData) => {
-	pHTML.find(`div.form-group[data-setting-id="${ModuleName}.PhysicalInjurieTable"]`).after(`<button name="openXPoptionsmenu"> ${game.i18n.localize(ModuleName + ".Titles.openXPoptionsmenu")}</button>`)
-	pHTML.find(`button[name="openXPoptionsmenu"]`).on("click", () => {new XPOptionsSettingWindow("XPoptions").render(true);});
+	pHTML.find(`div.form-group[data-setting-id="${ModuleName}.ShowLevelUpButton"]`).after(`<button name="openXPoptionsmenu"> ${game.i18n.localize(ModuleName + ".Titles.openXPoptionsmenu")}</button>`)
+	pHTML.find(`button[name="openXPoptionsmenu"]`).on("click", () => {new XPOptionsSettingWindow().render(true);});
 });  
