@@ -1,3 +1,6 @@
+## v1.4.1
+- Added report card for automated experience point gain
+
 ## v1.4.0
 - Added first part of automatic character advancement
   - Added world setting to turn this feature on/off
