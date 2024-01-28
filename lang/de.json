@@ -46,6 +46,10 @@
 			"Chase"						: "Siehe Vasesen Regelbuch S.62"
 		},
 		
+		"Messages" : {
+			"GainedXP" 					: "{Actor} hat {XP} Erfahrungspunkte erhalten:"
+		},
+		
 		"Settings" : {
 			"useXPautomation" : {
 				"name"					: "Nutze Erfahrungs Automatisierung",

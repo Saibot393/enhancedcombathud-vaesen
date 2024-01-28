@@ -129,4 +129,14 @@ function innerHTMLselector(html, selector, innerHTML) {
 	return returnElement;
 }
 
-export { getTooltipDetails, ModuleName, rollArmor, innerHTMLselector }
+function replacewords(text, words = {}){
+	let localtext = text;
+	
+	for (let word of Object.keys(words)) {
+		localtext = localtext.replace("{" + word + "}", words[word]);
+	}
+		
+	return localtext;
+}
+
+export { getTooltipDetails, ModuleName, rollArmor, innerHTMLselector, replacewords }

@@ -46,6 +46,10 @@
 			"Chase"						: "See Vaesen core rules book p.62"
 		},
 		
+		"Messages" : {
+			"GainedXP" 					: "{Actor} gained {XP} experience points:"
+		},
+		
 		"Settings" : {
 			"useXPautomation" : {
 				"name"					: "Use XP automation",
