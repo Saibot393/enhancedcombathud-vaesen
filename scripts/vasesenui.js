@@ -2,7 +2,7 @@ import {registerVaesenECHSItems, VaesenECHSlowItems, VaesenECHFastItems, VaesenE
 import {ModuleName, getTooltipDetails, rollArmor, innerHTMLselector} from "./utils.js";
 import {buildChatCard} from "/systems/vaesen/script/util/chat.js";
 import {prepareRollNewDialog} from "/systems/vaesen/script/util/roll.js";
-import {gainXPWindow} from "./levelup.js";
+import {gainXPWindow, spendXPWindow, xpThreshholdReached} from "./levelup.js";
 
 Hooks.on("argonInit", (CoreHUD) => {
     const ARGON = CoreHUD.ARGON;
@@ -223,7 +223,7 @@ Hooks.on("argonInit", (CoreHUD) => {
 		}
 		
 		async getLevelUPIcon() {
-			if (this.actor?.getFlag(ModuleName, "levelup") && game.settings.get(ModuleName, "useXPautomation")) {
+			if ((this.actor?.getFlag(ModuleName, "levelup") || xpThreshholdReached(this.actor)) && game.settings.get(ModuleName, "useXPautomation")) {
 				let levelupicon = document.createElement("div");
 				
 				levelupicon.style.backgroundImage = `url("modules/${ModuleName}/icons/upgrade.svg")`;
@@ -231,7 +231,20 @@ Hooks.on("argonInit", (CoreHUD) => {
 				levelupicon.style.height = "30px";
 				levelupicon.setAttribute("data-tooltip", game.i18n.localize(ModuleName + ".Titles.OpenXPMenu"));
 				
-				levelupicon.onclick = () => {new gainXPWindow(this.actor).render(true)}
+				levelupicon.onclick = () => {
+					if (this.actor?.getFlag(ModuleName, "levelup")) {
+						new gainXPWindow(this.actor).render(true)
+					}
+					else {
+						if (xpThreshholdReached(this.actor)) {
+							new spendXPWindow(this.actor).render(true);
+						}
+						else {
+							//something didn't update correctly, rerender and hope for the best
+							this.render();
+						}
+					}
+				}
 				
 				return levelupicon;
 			}
