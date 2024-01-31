@@ -248,7 +248,7 @@ class spendXPWindow extends Application {
 		
 		this.takenTalents = this.actor.items.filter(item => item.type == "talent");
 		
-		this.availableTalents = game.items.filter(item => item.type == "talent" && !item.name.includes("_argonUI_")).filter(talent => !this.takenTalents.find(item => item.name == talent.name));
+		this.availableTalents = game.items.filter(item => item.visible && item.type == "talent" && !item.name.includes("_argonUI_")).filter(talent => !this.takenTalents.find(item => item.name == talent.name));
 		this.chosenTalents = [];
 		
 		//this.renderState = {talentscroll : 0}
