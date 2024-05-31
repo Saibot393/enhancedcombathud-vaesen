@@ -700,8 +700,8 @@ Hooks.on("argonInit", (CoreHUD) => {
 			}
 			
 			if (this.item.type == "gear" || this.item.type == "magic" || this.item.type == "talent") {
-				const data = this.item.data;
-				const type = data.type;
+				const data = this.item;
+				const type = this.item.type;
 				/*
 				const skill = this.item.system.skill;
 				
