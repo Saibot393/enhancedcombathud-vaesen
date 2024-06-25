@@ -1,3 +1,6 @@
+## v2.0.1
+- Added Portuguese French translation (thanks to [Dolgrenn](https://github.com/Dolgrenn))
+
 ## v2.0.0
 - v12 compatibility
 
