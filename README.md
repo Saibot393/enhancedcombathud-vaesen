@@ -42,6 +42,6 @@ Due to the way movement works in Vaesen the Movement Tracker is not (yet?) avail
 
 #### Languages:
 
-The module contains an English and a German translation. If you want additional languages to be supported [let me know](https://github.com/Saibot393/enhancedcombathud-vaesen/issues).
+The module contains an English, a German, and a French (thanks to [Dolgrenn](https://github.com/Dolgrenn)) translation. If you want additional languages to be supported [let me know](https://github.com/Saibot393/enhancedcombathud-vaesen/issues).
 
 **If you have suggestions, questions, or requests for additional features please [let me know](https://github.com/Saibot393/enhancedcombathud-vaesen/issues).**
