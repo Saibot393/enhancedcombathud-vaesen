@@ -1,0 +1,94 @@
+{
+	"enhancedcombathud-vaesen" : {
+		"Titles" : {
+			"SlowAction"				: "ACTIONS LENTES",
+			"FastAction"				: "ACTIONS RAPIDES",
+			"ReAction"					: "RÉACTIONS",
+			"Flee"						: "Fuir",
+			"WPG"						: "lutter",
+			"Survey"					: "Examiner la situation",
+			"TreatInjuries"				: "Soigner des blessures",
+			"DrawWeapon"				: "Dégainer une arme",
+			"Standup"					: "Se relever",
+			"Move"						: "Se déplacer",
+			"TakeCover"					: "Se mettre à couvert",
+			"Dodge"						: "Esquiver",
+			"Parry"						: "Parer",
+			"BreakFree"					: "Se libérer d'une prise",
+			"Chase"						: "Poursuivre",
+			
+			"LevelUP"					: "Déclencher la progression du personnage",
+			"openXPoptionsmenu"			: "Configurer les options d'expérience",
+			"XPOptions"					: "Options d'expérience",
+			"defaultXPOption" : {
+				"name"					: "Nouvelle option d'expérience"
+			},
+			"addXPOption"				: "Ajouter une option d'expérience",
+			"confirmChanges"			: "Confirmer et sauvegarder",
+			"OpenXPMenu"				: "Ouvrir le menu de progression du personnage",
+			"CharacterAdvancement"		: "Progression du personnage",
+			"CheckWhichApplies"			: "Cochez toutes les questions auxquelles vous pouvez répondre par \"oui\":",
+			"confirmXP"					: "Valider",
+			"XPAvailable"				: "Vous pouvez dépenser {XPleft}/{XPmax} points d'expérience pour améliorer {Actor}:"
+		},
+		
+		"Descriptions" : {
+			"Flee"						: "Voir livre de règles de base de Vaesen p.62",
+			"WPG"						: "Voir livre de règles de base de Vaesen p.62",
+			"Survey"					: "Voir livre de règles de base de Vaesen p.62",
+			"TreatInjuries"				: "Voir livre de règles de base de Vaesen p.71",
+			"DrawWeapon"				: "Voir livre de règles de base de Vaesen p.60",
+			"Standup"					: "Voir livre de règles de base de Vaesen p.60",
+			"Move"						: "Voir livre de règles de base de Vaesen p.60",
+			"TakeCover"					: "Voir livre de règles de base de Vaesen p.73",
+			"Dodge"						: "Voir livre de règles de base de Vaesen p.61",
+			"Parry"						: "Voir livre de règles de base de Vaesen p.61",
+			"BreakFree"					: "Voir livre de règles de base de Vaesen p.62",
+			"Chase"						: "Voir livre de règles de base de Vaesen p.62"
+		},
+		
+		"Messages" : {
+			"GainedXP" 					: "{Acteur} a gagné {XP} points d'expérience:"
+		},
+		
+		"Settings" : {
+			"useXPautomation" : {
+				"name"					: "Utiliser l'automatisation de l'XP",
+				"descrp"				: "Si un bouton doit être affiché dans le menu de contrôle pour déclencher la progression automatique des personnages pour les joueurs"
+			},
+			"MentalInjurieTable" : {
+				"name"					: "Table aléatoire des lésions mentales",
+				"descrp"				: "La table aléatoire des lésions mentales (ID de la table)"
+			},
+			"PhysicalInjurieTable" : {
+				"name"					: "Table aléatoire des lésions physiques",
+				"descrp"				: "La table aléatoire des lésions physiques (ID de la table)"
+			},
+			"TreatType" : {
+				"name"					: "Soigner le type de blessures",
+				"descrp"				: "Quel type de traitement des blessures doit être mis en place lorsque l'on clique sur le bouton d'action"
+			},
+			"ShowTalents" : {
+				"name"					: "Afficher un bouton pour les talents",
+				"descrp"				: "Si un bouton pour les talents doit être affiché"				
+			},
+			"UseDiceCircles" : {
+				"name"					: "Utiliser les symboles de dés",
+				"descrp"				: "Si les symboles de dé doivent être utilisés à la place des nombres pour les compétences et les attributs"				
+			},
+			"AutoRollInjuries" : {
+				"name"					: "jet automatique des lésions",
+				"descrp"				: "Si un jet pour les lésions critiques doit être automatiquement réalisé lorsque la condition \"brisé\" est appliquée"				
+			},
+			"AutoApplyBroken" : {
+				"name"					: "Appliquer automatiquement brisé",
+				"descrp"				: "Si la condition brisé doit être automatiquement appliquée lorsque toutes les autres conditions mentales/physiques sont actives"				
+			}
+		}
+	},
+	
+    "enhancedcombathud.themeOptions.mainAction" : "Couleurs d'action lente",
+    "enhancedcombathud.themeOptions.bonusAction" : "Couleurs d'action rapide",
+    "enhancedcombathud.themeOptions.freeAction" : "Non utilisé par Argon Vaesen",
+    "enhancedcombathud.themeOptions.reaction" : "Couleurs de réaction"
+}
